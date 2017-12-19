@@ -28,3 +28,8 @@ Do note that the `cost-limit` parameter is an estimation, and **is not a guarant
 }
 ``` 
 
+## `training-script-filename` ##
+
+This package comes pre-loaded with a `trainer-script.sh` script to get you started. The Lambda function will find this file in the package and feed it into the CloudFormation template for you when invoked. 
+
+* Example: `trainer-script.sh`
