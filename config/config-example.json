@@ -1,0 +1,9 @@
+{
+  "_comment": "This is an example configuration file. You can run this to get an idea of how your training jobs will go.",
+  "training-job-name": "Test-Training-Job",
+  "termination-method": "cost-limit",
+  "termination-options": {
+    "time-limit": 10.0,
+    "cost-limit": 300.0
+  }
+}

@@ -26,6 +26,21 @@ Parris, the automated training tool for machine learning algorithms.
 
 You'll need an AWS account.
 
+
+```bash
+$ git clone https://*/parris.git && cd parris
+$ virtualenv -p python3 env
+$ source env/bin/activate
+(env) $ pip install -r requirements.txt 
+```
+
+### FAQ ###
+
+#### Will this cost money to run? ####
+
+Yes, it will, even on an AWS Free Tier account (due to the instance type used).
+
 ### Contact ###
 
 * Joseph Greene, jgreenemi@gmail.com
+
