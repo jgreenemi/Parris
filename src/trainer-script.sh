@@ -8,8 +8,6 @@
 # You'll want to include some kind of logging facility with this script
 # in case things go wrong.
 
-# TODO Does sudo need to be used to run any of the install/poweroff commands?
-
 # Run setup of your training session. Your commands will invariably look different.
 cd /tmp
 yum install -y git

@@ -1,0 +1,112 @@
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Description" : "Create stack for Parris ML training job. This is being launched using an example template, and as such will likely need some parameters changed for your environment.",
+  "Parameters" : {
+    "UserDataScript": {
+      "Description": "The full text of your trainer-script file.",
+      "Type": "String"
+    },
+    "SecurityGroupId": {
+      "Description": "SG ID",
+      "Type": "String",
+      "Default": "sg-2ff91848"
+    },
+    "SubnetId": {
+      "Description": "The Subnet ID this should be launched into.",
+      "Type": "String",
+      "Default": "subnet-634f5c06"
+    },
+    "InstanceType" : {
+      "Description" : "EC2 instance type",
+      "Type" : "String",
+      "Default" : "t2.micro",
+      "AllowedValues" : [
+        "t2.micro",
+        "p2.xlarge"
+      ],
+      "ConstraintDescription" : "Invalid EC2 instance type - note that some instance types are not enabled by default in the CFN template."
+    }
+  },
+
+  "Mappings" : {
+    "AWSInstanceType2Arch" : {
+      "t2.micro"    : { "Arch" : "HVM64"  },
+      "p2.xlarge" : { "Arch" : "HVM64"  }
+    },
+    "AWSRegionArch2AMI" : {
+      "us-east-1"        : {"PV64" : "ami-2a69aa47", "HVM64" : "ami-6869aa05", "HVMG2" : "ami-1f12e965"},
+      "us-west-2"        : {"PV64" : "ami-7f77b31f", "HVM64" : "ami-7172b611", "HVMG2" : "ami-5c9b6124"},
+      "us-west-1"        : {"PV64" : "ami-a2490dc2", "HVM64" : "ami-31490d51", "HVMG2" : "ami-7291a112"},
+      "eu-west-1"        : {"PV64" : "ami-4cdd453f", "HVM64" : "ami-f9dd458a", "HVMG2" : "ami-b411c5cd"},
+      "eu-west-2"        : {"PV64" : "NOT_SUPPORTED", "HVM64" : "ami-886369ec", "HVMG2" : "NOT_SUPPORTED"},
+      "eu-central-1"     : {"PV64" : "ami-6527cf0a", "HVM64" : "ami-ea26ce85", "HVMG2" : "ami-be40f2d1"},
+      "ap-northeast-1"   : {"PV64" : "ami-3e42b65f", "HVM64" : "ami-374db956", "HVMG2" : "ami-3efd2c58"},
+      "ap-northeast-2"   : {"PV64" : "NOT_SUPPORTED", "HVM64" : "ami-2b408b45", "HVMG2" : "NOT_SUPPORTED"},
+      "ap-southeast-1"   : {"PV64" : "ami-df9e4cbc", "HVM64" : "ami-a59b49c6", "HVMG2" : "ami-3e91ed5d"},
+      "ap-southeast-2"   : {"PV64" : "ami-63351d00", "HVM64" : "ami-dc361ebf", "HVMG2" : "ami-84a142e6"},
+      "ap-south-1"       : {"PV64" : "NOT_SUPPORTED", "HVM64" : "ami-ffbdd790", "HVMG2" : "ami-25ffbe4a"},
+      "us-east-2"        : {"PV64" : "NOT_SUPPORTED", "HVM64" : "ami-f6035893", "HVMG2" : "NOT_SUPPORTED"},
+      "ca-central-1"     : {"PV64" : "NOT_SUPPORTED", "HVM64" : "ami-730ebd17", "HVMG2" : "NOT_SUPPORTED"},
+      "sa-east-1"        : {"PV64" : "ami-1ad34676", "HVM64" : "ami-6dd04501", "HVMG2" : "NOT_SUPPORTED"},
+      "cn-north-1"       : {"PV64" : "ami-77559f1a", "HVM64" : "ami-8e6aa0e3", "HVMG2" : "NOT_SUPPORTED"},
+      "cn-northwest-1"   : {"PV64" : "ami-80707be2", "HVM64" : "ami-cb858fa9", "HVMG2" : "NOT_SUPPORTED"}
+    }
+
+  },
+
+  "Resources" : {
+    "EC2Instance" : {
+      "Type" : "AWS::EC2::Instance",
+      "Properties" : {
+        "KeyName": "Oregon-Key-Pair",
+        "SubnetId": {"Ref" : "SubnetId"},
+        "InstanceType" : { "Ref" : "InstanceType" },
+        "SecurityGroupIds" : [ { "Ref" : "SecurityGroupId" } ],
+        "ImageId" :
+        {
+          "Fn::FindInMap" : [
+            "AWSRegionArch2AMI",
+            { "Ref" : "AWS::Region" },
+            {
+              "Fn::FindInMap" : [
+                "AWSInstanceType2Arch",
+                { "Ref" : "InstanceType" },
+                "Arch"
+              ]
+            }
+          ]
+        },
+        "UserData": {
+          "Fn::Base64" : {
+            "Fn::Join" : [
+              "", [
+                {
+                "Ref" : "UserDataScript"
+                }
+              ]
+            ]
+          }
+        }
+      }
+    }
+  },
+
+  "Outputs" : {
+    "InstanceId" : {
+      "Description" : "InstanceId of the newly created EC2 instance",
+      "Value" : { "Ref" : "EC2Instance" }
+    },
+    "AZ" : {
+      "Description" : "Availability Zone of the newly created EC2 instance",
+      "Value" : { "Fn::GetAtt" : [ "EC2Instance", "AvailabilityZone" ] }
+    },
+    "PublicDNS" : {
+      "Description" : "Public DNSName of the newly created EC2 instance",
+      "Value" : { "Fn::GetAtt" : [ "EC2Instance", "PublicDnsName" ] }
+    },
+    "PublicIP" : {
+      "Description" : "Public IP address of the newly created EC2 instance",
+      "Value" : { "Fn::GetAtt" : [ "EC2Instance", "PublicIp" ] }
+    }
+  }
+}
