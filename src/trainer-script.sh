@@ -15,6 +15,11 @@ git clone https://github.com/jgreenemi/MXNet-Familiarity-Project.git
 cd MXNet-Familiarity-Project
 pip install -r requirements.txt
 
+# Pull down the necessary datasets. Keep in my the EC2 instance needs an S3 read IAM role
+# to pull from S3.
+mkdir data & cd data
+aws s3 cp s3://com.jgreenemi.mlbucket/ml-datasets/example-tpp-data/ . --recursive
+
 # Setup done - now run the training job.
 python classifier\trainer.py
 
