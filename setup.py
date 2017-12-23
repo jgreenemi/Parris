@@ -101,8 +101,6 @@ def lambda_creation(config={}, lambdapack='', lambda_role=''):
             }
         )
 
-
-
         # Report success with the function's ARN!
         try:
             lambda_arn = creation_response['FunctionArn']

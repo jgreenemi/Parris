@@ -3,6 +3,7 @@
 import base64
 import boto3
 import json
+import logging
 from pprint import pprint
 
 
@@ -89,16 +90,28 @@ def _test_stack_creator():
     return
 
 
-def lambda_handler():
+def lambda_handler(event, context):
     """
-    The function intended to be kicked off when loaded up by AWS Lambda.
+    The function intended to be kicked off when loaded up by AWS Lambda. Takes the expected event and context arguments.
+    :param event:
+    :ptype event: dict, list, str, int, float, or NoneType
+    :param context:
+    :ptype context: LambdaContext
     :return:
     """
+
+    logging.debug('Got invocation from Lambda event: {}'.format(str(event)))
+
+    # If you'd like to have the handler return some values (for example, for integration into a custom training-job
+    # dashboard from which one can launch new training stacks), you can set those here. For now, it just returns an
+    # empty dict.
+    return_values = {}
 
     stack_creator_passfail, stack_creator_msg = stack_creator()
     if not stack_creator_passfail:
         print('stack_creator() Failed: {}'.format(stack_creator_msg))
-    return
+
+    return return_values
 
 
 if __name__ == '__main__':
