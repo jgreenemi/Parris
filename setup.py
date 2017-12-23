@@ -14,7 +14,8 @@ import zipfile
 def lambda_packer(config={}):
     """
     To create the Lambda function we need to pack up a ZIP file to upload. Returns true if the ZIP archive is created,
-    False is something goes wrong.
+    False is something goes wrong. If it succeeds, the second item in the returned tuple object is the 'lambdapack'
+    filepath, or the relative filepath to the Lambda-ready ZIP file.
     :return:
     """
     try:
@@ -25,14 +26,14 @@ def lambda_packer(config={}):
         # for the Lambda to function, but in case you have custom needs you can add the necessary directories under this
         # dict.
         directories_to_include = ['config', 'src']
-        destination_filepath = 'target/lambdapack-{}.zip'.format(config['training-job-name'])
+        destination_filepath = 'target/Parris-v1-Lambda.zip'
 
         # Create the target directory if it doesn't exist.
         if not os.path.exists('target'):
             try:
                 os.makedirs('target')
-            except:
-                raise Exception('Tried to create target/ dir but failed.')
+            except Exception as e:
+                raise Exception('Tried to create target/ dir but failed. {}'.format(e))
 
         with zipfile.ZipFile(destination_filepath, mode='w') as lambdapack:
             # Crawl directories, and write their files into the ZIP with the structure of foldername/filename.
@@ -45,26 +46,70 @@ def lambda_packer(config={}):
                         lambdapack.write(filename=composite_filename, arcname=composite_filename)
 
         logging.info('Packed lambdapack to {}'.format(destination_filepath))
-        return True, destination_filepath
+        return [True, destination_filepath]
 
     except Exception as e:
         msg = 'lambda_packer failure: {}'.format(e)
         logging.error(msg)
-        return False, msg
+        return [False, msg]
 
 
-def lambda_creation(config={}):
+def lambda_creation(config={}, lambdapack='', lambda_role=''):
     """
     Create the lambda function, return the response, give the AWS CLI command to execute it.
     :return:
     """
     try:
-        return True
+        # Make a Lambda Boto3 client, upload lambdapack, return successful ARN to prove success.
+        # TODO customize the method by which the AWS keys are decided. User may want to create this under a different
+        # AWS account than their environment variables are set.
+        client_lambda = boto3.client('lambda')
+
+        # Set or create an IAM role for the Lambda function to use. This is equal to the ARN of that role.
+        # TODO Make the IAM role configurable by user for what they may need from it. Since this'll be job-agnostic,
+        # assume it needs read/write to S3, CFN launch, EC2 tag describe, and nothing else.
+        if not lambda_role:
+            lambda_role = 'arn:aws:iam::277012880214:role/lambda_basic_execution'
+
+        # TODO Check if Lambda function exists. If not, create. If, update.
+        # TODO Allow training-job config to specify if this function should be noclobber if exists. Doesn't really
+        # need to be in the training-job config if the Lambda function will be job-agnostic though.
+
+        logging.warning('Uploading Lambdapack from {}'.format(lambdapack_filepath))
+
+        creation_response = client_lambda.create_function(
+            FunctionName='Parris-v1-Lambda',
+            Runtime='python3.6',
+            Role=lambda_role,
+            Handler='lambda_function.lambda_handler',
+            Code={
+                'ZipFile': open(lambdapack_filepath, mode='rb').read()
+            },
+            Description='Lambda function for Parris, the ML training automation tool.',
+            Timeout=30,
+            MemorySize=128,
+            Publish=True,
+            Tags={
+                'Name': 'Parris-v1-Lambda'
+            }
+        )
+
+        # Report success with the function's ARN!
+        try:
+            lambda_arn = creation_response['FunctionArn']
+        except Exception as e:
+            raise Exception(
+                'lambda_creation failure: Lambda ARN not pulled from response: {} \nResponse contents: {}'
+                .format(e, creation_response)
+            )
+
+        logging.warning('Successfully created function: {}'.format(lambda_arn))
+        return [True, lambda_arn]
     
     except Exception as e:
         msg = 'lambda_creation failure: {}'.format(e)
         logging.error(msg)
-        return False
+        return [False, msg]
 
 
 def parse_config():
@@ -104,7 +149,8 @@ def _test_lambda_creation():
     :return:
     """
     try:
-        raise Exception('uhoh!')
+        config = parse_config()
+        lambda_creation(config)
         return [True, '']
     
     except Exception as e:
@@ -140,14 +186,23 @@ if __name__ == '__main__':
     testresult = []
     testresult.append(_test_parse_config())
     testresult.append(_test_lambda_packer())
-    testresult.append(_test_lambda_creation())
+    # Disabling this test as I want to find a more suitable upload test approach.
+    #testresult.append(_test_lambda_creation())
     for testresult, testmsg in testresult:
         if not testresult:
             raise Exception('Tests did not pass: {}'.format(testmsg))
 
-
     # If the tests have all passed, go ahead with function creation.
-    
-    #lambda_creation(config=parse_config())
+    # Lambdapack is your Lambda-ready ZIP file. You don't have to use the lambda_packer function if you already have one
+    # made up, but this is likely the option you want.
+    try:
+        # TODO Move these to their own function, likely lambda_creation, name them for internal functions per PEP8.
+        config = parse_config()
+        lambdapack_successfail, lambdapack_filepath = lambda_packer(config=config)
+        lambda_creation(config=config, lambdapack=lambdapack_filepath)
+
+    except Exception as e:
+        msg = '_test_parse_config failure: {}'.format(e)
+        logging.error(msg)
 
     logging.info('setup.py finished.')
