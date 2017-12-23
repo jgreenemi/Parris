@@ -73,10 +73,19 @@ def lambda_creation(config={}, lambdapack='', lambda_role=''):
         client_lambda = boto3.client('lambda')
 
         # Set or create an IAM role for the Lambda function to use. This is equal to the ARN of that role.
+        # IAM role must have at a minimum:
+        #  cloudformation:CreateStack
+        #  cloudformation:ValidateTemplate
+        #  ec2:RunInstances
+        #  ec2:DescribeInstances
+        #  ec2:DescribeInstancesStatus
+        #  ec2:TerminateInstances
+        # TODO Put this into the documentation.
+
         # TODO Make the IAM role configurable by user for what they may need from it. Since this'll be job-agnostic,
         # assume it needs read/write to S3, CFN launch, EC2 tag describe, and nothing else.
         if not lambda_role:
-            lambda_role = 'arn:aws:iam::277012880214:role/lambda_basic_execution'
+            lambda_role = 'arn:aws:iam::277012880214:role/Lambda_CFN_CreateAndValidate'
 
         # TODO Check if Lambda function exists. If not, create. If, update.
         # TODO Allow training-job config to specify if this function should be noclobber if exists. Doesn't really

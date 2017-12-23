@@ -1,6 +1,5 @@
-# Create
+# Create the CloudFormation stack with the trainer-script loaded.
 
-import base64
 import boto3
 import json
 import logging
@@ -43,6 +42,7 @@ def stack_creator(testmode=False):
     :return:
     """
     try:
+        logging.debug('stack_creator starting.')
         msg = ''
 
         if testmode:
@@ -73,9 +73,11 @@ def stack_creator(testmode=False):
 
             msg = 'CloudFormation stack has started launching successfully!'
 
+        logging.warning(msg)
         return True, msg
     except Exception as e:
         err = 'Exception: {}'.format(e)
+        logging.error(err)
         return False, err
 
 
@@ -86,7 +88,7 @@ def _test_stack_creator():
     """
     stack_creator_passfail, stack_creator_msg = stack_creator(testmode=True)
     if not stack_creator_passfail:
-        print('_test_stack_creator() Failed: {}'.format(stack_creator_msg))
+        logging.error('_test_stack_creator() Failed: {}'.format(stack_creator_msg))
     return
 
 
@@ -107,13 +109,16 @@ def lambda_handler(event, context):
     # empty dict.
     return_values = {}
 
+
     stack_creator_passfail, stack_creator_msg = stack_creator()
     if not stack_creator_passfail:
-        print('stack_creator() Failed: {}'.format(stack_creator_msg))
+        err_msg = 'stack_creator() Failed: {}'.format(stack_creator_msg)
+        logging.error(err_msg)
+        raise Exception(err_msg)
 
     return return_values
 
 
 if __name__ == '__main__':
     _test_stack_creator()
-    print('_test_stack_creator() passed!')
+    logging.warning('_test_stack_creator() passed!')
