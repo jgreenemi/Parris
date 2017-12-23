@@ -43,7 +43,14 @@ def lambda_packer(config={}):
                     for individual_file in filename:
                         composite_filename = os.path.join(root, individual_file)
                         logging.warning('Adding: {}'.format(composite_filename))
-                        lambdapack.write(filename=composite_filename, arcname=composite_filename)
+
+                        # AWS Lambda functions are expected to have the handler at the top level of the package.
+                        # If you have other scripts like lambda-function.py that need to be in the root of the package,
+                        # include them in the list below and they'll be put at the root of the ZIP archive.
+                        if individual_file in ['lambda-function.py']:
+                            lambdapack.write(filename=composite_filename, arcname=individual_file)
+                        else:
+                            lambdapack.write(filename=composite_filename, arcname=composite_filename)
 
         logging.info('Packed lambdapack to {}'.format(destination_filepath))
         return [True, destination_filepath]
@@ -81,7 +88,7 @@ def lambda_creation(config={}, lambdapack='', lambda_role=''):
             FunctionName='Parris-v1-Lambda',
             Runtime='python3.6',
             Role=lambda_role,
-            Handler='lambda_function.lambda_handler',
+            Handler='lambda-function.lambda_handler',
             Code={
                 'ZipFile': open(lambdapack_filepath, mode='rb').read()
             },
@@ -94,6 +101,8 @@ def lambda_creation(config={}, lambdapack='', lambda_role=''):
             }
         )
 
+
+
         # Report success with the function's ARN!
         try:
             lambda_arn = creation_response['FunctionArn']
@@ -103,7 +112,7 @@ def lambda_creation(config={}, lambdapack='', lambda_role=''):
                 .format(e, creation_response)
             )
 
-        logging.warning('Successfully created function: {}'.format(lambda_arn))
+        logging.warning('Successfully created function: \n{}'.format(lambda_arn))
         return [True, lambda_arn]
     
     except Exception as e:
