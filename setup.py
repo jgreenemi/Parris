@@ -205,7 +205,10 @@ if __name__ == '__main__':
     testresult = []
     testresult.append(_test_parse_config())
     testresult.append(_test_lambda_packer())
-    testresult.append(_test_lambda_creation())
+
+    # There is no dryrun option for creating the function so this isn't terribly helpful for us.
+    #testresult.append(_test_lambda_creation())
+
     for testresult, testmsg in testresult:
         if not testresult:
             raise Exception('Tests did not pass: {}'.format(testmsg))

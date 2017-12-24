@@ -156,7 +156,7 @@ def stack_creator(testmode=False):
                         'ParameterValue': training_config.get('subnet-id', '')
                     },
                     {
-                        'ParameterKey': 'KeyPairNames',
+                        'ParameterKey': 'KeyPairName',
                         'ParameterValue': training_config.get('ec2-keypair-name', '')
                     }
                 ]

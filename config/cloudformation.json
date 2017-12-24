@@ -16,7 +16,7 @@
       "Type": "String",
       "Default": "subnet-634f5c06"
     },
-    "KeyPairNames": {
+    "KeyPairName": {
       "Description": "The name of the SSH keypair you'll give your EC2 instance, in case you need to SSH into it.",
       "Type": "String",
       "Default": "Oregon-Key-Pair"
