@@ -58,7 +58,7 @@ def lambda_packer():
         return [False, msg]
 
 
-def lambda_creation(lambda_config={}, lambdapack=''):
+def lambda_creation(lambda_config={}, lambdapack='', dryrun=False):
     """
     Create the lambda function, return the response, give the AWS CLI command to execute it.
     :return:
@@ -75,18 +75,23 @@ def lambda_creation(lambda_config={}, lambdapack=''):
         # need to be in the training-job config if the Lambda function will be job-agnostic though.
 
         try:
-            logging.warning('Uploading Lambdapack from {}'.format(lambdapack_filepath))
+            logging.warning('Uploading Lambdapack from {}'.format(lambdapack))
             creation_response = client_lambda.create_function(
                 FunctionName='Parris-v1-Lambda',
                 Runtime='python3.6',
-                Role=lambda_config['lambda_role_arn'],
+                Role=lambda_config['lambda-role-arn'],
                 Handler='lambda-function.lambda_handler',
                 Code={
-                    'ZipFile': open(lambdapack_filepath, mode='rb').read()
+                    'ZipFile': open(lambdapack, mode='rb').read()
                 },
                 Description='Lambda function for Parris, the ML training automation tool.',
                 Timeout=30,
                 MemorySize=128,
+                Environment={
+                    'Variables': {
+                        's3_training_bucket': lambda_config.get('s3-training-bucket', '')
+                    }
+                },
                 Tags={
                     'Name': 'Parris-v1-Lambda'
                 }
@@ -99,9 +104,12 @@ def lambda_creation(lambda_config={}, lambdapack=''):
             # is not available in botocore or boto3 to use, so this'll have to do.
             if 'ResourceConflictException' in str(update_err):
                 logging.error('lambda_creation encountered ResourceConflictException - attempting function update.')
+                if dryrun:
+                    logging.warning('lambda_creation is running under DryRun mode for the update function.')
                 creation_response = client_lambda.update_function_code(
                     FunctionName='Parris-v1-Lambda',
-                    ZipFile=open(lambdapack_filepath, mode='rb').read()
+                    ZipFile=open(lambdapack, mode='rb').read(),
+                    DryRun=dryrun
                 )
             else:
                 raise Exception(update_err)
@@ -161,7 +169,8 @@ def _test_lambda_creation():
     """
     try:
         lambda_config = parse_config()
-        lambda_creation(lambda_config)
+        lambdapack_successfail, lambdapack_filepath = lambda_packer()
+        lambda_creation(lambda_config, lambdapack=lambdapack_filepath, dryrun=True)
         return [True, '']
     
     except Exception as e:
@@ -178,7 +187,7 @@ def _test_parse_config():
     """
     try:
         lambda_config = parse_config()
-        logging.debug('Config parsed, training-job-name set to: {}'.format(lambda_config['lambda_role_arn']))
+        logging.debug('Config parsed, training-job-name set to: {}'.format(lambda_config['lambda-role-arn']))
         return [True, '']
     
     except Exception as e:
@@ -193,15 +202,15 @@ if __name__ == '__main__':
     """
 
     # TODO Go through this file and change the logger so not everything's a logging.warning() message.
-
     testresult = []
     testresult.append(_test_parse_config())
     testresult.append(_test_lambda_packer())
-    # Disabling this test as I want to find a more suitable upload test approach.
-    #testresult.append(_test_lambda_creation())
+    testresult.append(_test_lambda_creation())
     for testresult, testmsg in testresult:
         if not testresult:
             raise Exception('Tests did not pass: {}'.format(testmsg))
+
+    logging.warning('All setup.py tests passed!')
 
     # If the tests have all passed, go ahead with function creation.
     # Lambdapack is your Lambda-ready ZIP file. You don't have to use the lambda_packer function if you already have one
@@ -210,8 +219,7 @@ if __name__ == '__main__':
         # TODO Move these to their own function, likely lambda_creation, name them for internal functions per PEP8.
         lambda_config = parse_config()
         lambdapack_successfail, lambdapack_filepath = lambda_packer()
-        lambda_creation(lambda_config=lambda_config)
-        #config=config, lambdapack=lambdapack_filepath)
+        lambda_creation(lambda_config=lambda_config, lambdapack=lambdapack_filepath)
 
     except Exception as e:
         msg = '_test_parse_config failure: {}'.format(e)

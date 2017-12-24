@@ -1,4 +1,4 @@
 {
-  "lambda_role_arn": "arn:aws:iam::277012880214:role/Lambda_CFN_CreateAndValidate",
-  "s3_training_bucket": ""
+  "lambda-role-arn": "arn:aws:iam::277012880214:role/Lambda_CFN_CreateAndValidate",
+  "s3-training-bucket": "com.jgreenemi.mlbucket"
 }

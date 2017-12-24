@@ -26,4 +26,4 @@ python3 classifier/trainer.py
 
 # If the script has completed, go ahead and turn off the server to eliminate any
 # additional costs.
-# poweroff now
+poweroff now

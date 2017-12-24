@@ -3,34 +3,96 @@
 import boto3
 import json
 import logging
+import os
 from pprint import pprint
 
 
-def template_loader():
+def parse_training_config(training_config_path=''):
+    """
+    Pull in a training config and return its contents.
+    :return:
+    """
+    try:
+        # Default to the existing training config file in the Lambda function if a specific filename wasn't passed in.
+        if not training_config_path:
+            training_config_path = 'config/training-config.json'
+            config = json.load(open(training_config_path))
+
+        else:
+            client_s3 = boto3.client('s3')
+            s3_response = client_s3.get_object(
+                Bucket=training_config_path,
+                Key='training-config.json'
+            )
+
+            config = json.loads(s3_response['Body'].read().decode('utf-8'))
+
+        return config
+
+    except Exception as e:
+        msg = 'parse_config failure: {}'.format(e)
+        logging.error(msg)
+        return False
+
+
+def template_loader(template_path='', cloudformation_template_filename=''):
     """
     Given the filepath for the CloudFormation template, load and return it as a dict.
     :return:
     """
-    cfn_template_contents = json.load(open('config/cloudformation.json'))
+    try:
+        if not template_path:
+            template_path = 'config/cloudformation.json'
+            cfn_template_contents = json.load(open(template_path))
 
-    return cfn_template_contents
+        else:
+            client_s3 = boto3.client('s3')
+            s3_response = client_s3.get_object(
+                Bucket=template_path,
+                Key=cloudformation_template_filename
+            )
+
+            cfn_template_contents = s3_response['Body'].read().decode('utf-8')
+
+        return cfn_template_contents
+
+    except Exception as e:
+        msg = 'template_loader failure: {}'.format(e)
+        logging.error(msg)
+        return False
 
 
-def userdata_loader(testmode=False):
+def userdata_loader(s3_training_bucket='', trainer_script_name='trainer-script.sh'):
     """
     Given the filepath for the trainer-script, load and return its contents as a str.
-    :param testmode:
+    :param s3_training_bucket:
+    :param trainer_script_name:
     :return:
     """
-    if testmode:
-        userdata_filepath = 'target/userdata-confirmation-example.sh'
-    else:
-        userdata_filepath = 'src/trainer-script.sh'
 
-    with open(userdata_filepath, 'r') as f:
-        userdata_script = f.read()
+    try:
+        # If the user didn't pass in another location to pull in the trainer-script from, grab the one in this package.
+        if not s3_training_bucket:
+            userdata_filepath = 'src/{}'.format(trainer_script_name)
+            with open(userdata_filepath, 'r') as f:
+                userdata_script = f.read()
 
-    return userdata_script
+        else:
+            # If a value was passed in, assume it to be an S3 key - retrieve its contents.
+            client_s3 = boto3.client('s3')
+            s3_response = client_s3.get_object(
+                Bucket=s3_training_bucket,
+                Key=trainer_script_name
+            )
+
+            userdata_script = s3_response['Body'].read().decode('utf-8')
+
+        return userdata_script
+
+    except Exception as e:
+        err = 'userdata_loader failure: {}'.format(e)
+        logging.error(err)
+        return False
 
 
 def stack_creator(testmode=False):
@@ -45,20 +107,33 @@ def stack_creator(testmode=False):
         logging.debug('stack_creator starting.')
         msg = ''
 
+        # It's okay if you're not planning to use an S3 bucket - this will be a blank string and the functions will
+        # handle that properly.
+        s3_training_bucket = os.environ.get('s3_training_bucket', '')
+
+        # Get the training config, either from the S3 training bucket or from the Lambda package.
+        training_config = parse_training_config(
+            training_config_path=s3_training_bucket
+        )
+
+        cfn_template_contents = template_loader(
+            template_path=s3_training_bucket,
+            cloudformation_template_filename=training_config.get('cloudformation_template_filename', ''))
+
+        userdata_script = userdata_loader(
+            s3_training_bucket=s3_training_bucket,
+            trainer_script_name=training_config.get('training-script-filename', '')
+        )
+
+        client_cfn = boto3.client('cloudformation')
+
         if testmode:
-            cfn_template_contents = template_loader()
-            userdata_script = userdata_loader(testmode)
-            client_cfn = boto3.client('cloudformation')
             create_stack_response = client_cfn.validate_template(
                 TemplateBody='{}'.format(cfn_template_contents)
             )
 
             msg = 'CloudFormation template passed validation!'
-
         else:
-            cfn_template_contents = template_loader()
-            userdata_script = userdata_loader(testmode)
-            client_cfn = boto3.client('cloudformation')
             create_stack_response = client_cfn.create_stack(
                 StackName='parris-stack',
                 TemplateBody='{}'.format(cfn_template_contents),
@@ -76,7 +151,7 @@ def stack_creator(testmode=False):
         logging.warning(msg)
         return True, msg
     except Exception as e:
-        err = 'Exception: {}'.format(e)
+        err = 'stack_creator failure: {}'.format(e)
         logging.error(err)
         return False, err
 
@@ -109,7 +184,6 @@ def lambda_handler(event, context):
     # empty dict.
     return_values = {}
 
-
     stack_creator_passfail, stack_creator_msg = stack_creator()
     if not stack_creator_passfail:
         err_msg = 'stack_creator() Failed: {}'.format(stack_creator_msg)
@@ -119,6 +193,25 @@ def lambda_handler(event, context):
     return return_values
 
 
+def _test_userdata_loader():
+    """
+    Test that the trainer-script.sh file is loaded properly. Particularly handy for verifying S3 files are reachable.
+    :return:
+    """
+    try:
+        s3_training_bucket = 'com.jgreenemi.mlbucket'
+        training_config = parse_training_config(s3_training_bucket)
+        userdata_script = userdata_loader(
+            s3_training_bucket,
+            training_config.get('training-script-filename', '')
+        )
+
+        return True
+    except Exception as e:
+        return False
+
+
 if __name__ == '__main__':
+    _test_userdata_loader()
     _test_stack_creator()
-    logging.warning('_test_stack_creator() passed!')
+    logging.warning('Tests finished!')

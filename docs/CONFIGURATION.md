@@ -8,7 +8,7 @@ All configuration options are required unless marked otherwise.
 
 You should only need to set this config once for the initial configuration of the Lambda function, and from here on out you should only need to update the `training-config.json` for each training job you're looking to run. The idea is that you'll use one Lambda function for launching multiple training stacks. 
 
-### `lambda_role_arn` ###
+### `lambda-role-arn` ###
 
 A string of the ARN value for your Lambda function's IAM role. This defines what your Lambda function has permission to do within your AWS account, so it's pretty important you get this set up correctly. The ARN value will look something like this:
 
@@ -81,6 +81,8 @@ Do note that the `cost-limit` parameter is an estimation, and **is not a guarant
 
 ### `training-script-filename` ###
 
-This package comes pre-loaded with a `trainer-script.sh` script to get you started. The Lambda function will find this file in the package and feed it into the CloudFormation template for you when invoked. 
+A string describing the trainer-script filename that this particular training job will use. If your Lambda config is set to use a S3 bucket for storing your training job configurations, your trainer-script will need to live in that bucket as well. If you're not using the S3 bucket, the trainer-script in the `src/` directory of this package will be loaded instead. 
+ 
+ In either case, Lambda will feed the trainer-script into the CloudFormation template for you when launching the CloudFormation stack, and it'll run as the EC2 instance userdata script - basically the first script that is run on the server after it has been spun up. 
 
 * Example: `trainer-script.sh`
