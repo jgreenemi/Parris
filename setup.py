@@ -61,7 +61,7 @@ def lambda_packer(config={}):
         return [False, msg]
 
 
-def lambda_creation(config={}, lambdapack='', lambda_role=''):
+def lambda_creation(config={}, lambdapack='', lambda_role_arn=''):
     """
     Create the lambda function, return the response, give the AWS CLI command to execute it.
     :return:
@@ -84,39 +84,51 @@ def lambda_creation(config={}, lambdapack='', lambda_role=''):
 
         # TODO Make the IAM role configurable by user for what they may need from it. Since this'll be job-agnostic,
         # assume it needs read/write to S3, CFN launch, EC2 tag describe, and nothing else.
-        if not lambda_role:
-            lambda_role = 'arn:aws:iam::277012880214:role/Lambda_CFN_CreateAndValidate'
+        if not lambda_role_arn:
+            lambda_role_arn = 'arn:aws:iam::277012880214:role/Lambda_CFN_CreateAndValidate'
 
-        # TODO Check if Lambda function exists. If not, create. If, update.
         # TODO Allow training-job config to specify if this function should be noclobber if exists. Doesn't really
         # need to be in the training-job config if the Lambda function will be job-agnostic though.
 
-        logging.warning('Uploading Lambdapack from {}'.format(lambdapack_filepath))
+        try:
+            logging.warning('Uploading Lambdapack from {}'.format(lambdapack_filepath))
+            creation_response = client_lambda.create_function(
+                FunctionName='Parris-v1-Lambda',
+                Runtime='python3.6',
+                Role=lambda_role_arn,
+                Handler='lambda-function.lambda_handler',
+                Code={
+                    'ZipFile': open(lambdapack_filepath, mode='rb').read()
+                },
+                Description='Lambda function for Parris, the ML training automation tool.',
+                Timeout=30,
+                MemorySize=128,
+                Tags={
+                    'Name': 'Parris-v1-Lambda'
+                }
+            )
 
-        creation_response = client_lambda.create_function(
-            FunctionName='Parris-v1-Lambda',
-            Runtime='python3.6',
-            Role=lambda_role,
-            Handler='lambda-function.lambda_handler',
-            Code={
-                'ZipFile': open(lambdapack_filepath, mode='rb').read()
-            },
-            Description='Lambda function for Parris, the ML training automation tool.',
-            Timeout=30,
-            MemorySize=128,
-            Publish=True,
-            Tags={
-                'Name': 'Parris-v1-Lambda'
-            }
-        )
+        except Exception as update_err:
+            # If an error was thrown during the creation of the Lambda function, we want to intercept this and check if
+            # it was because the function already exists. If it does, try an update to it. Otherwise pass it along.
+            # Normally we would do an 'except ResourceConflictException:' block here, but for whatever reason this class
+            # is not available in botocore or boto3 to use, so this'll have to do.
+            if 'ResourceConflictException' in str(update_err):
+                logging.error('lambda_creation encountered ResourceConflictException - attempting function update.')
+                creation_response = client_lambda.update_function_code(
+                    FunctionName='Parris-v1-Lambda',
+                    ZipFile=open(lambdapack_filepath, mode='rb').read()
+                )
+            else:
+                raise Exception(update_err)
 
         # Report success with the function's ARN!
         try:
             lambda_arn = creation_response['FunctionArn']
-        except Exception as e:
+        except Exception as arn_err:
             raise Exception(
                 'lambda_creation failure: Lambda ARN not pulled from response: {} \nResponse contents: {}'
-                .format(e, creation_response)
+                .format(arn_err, creation_response)
             )
 
         logging.warning('Successfully created function: \n{}'.format(lambda_arn))
