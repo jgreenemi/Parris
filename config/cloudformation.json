@@ -16,6 +16,11 @@
       "Type": "String",
       "Default": "subnet-634f5c06"
     },
+    "KeyPairNames": {
+      "Description": "The name of the SSH keypair you'll give your EC2 instance, in case you need to SSH into it.",
+      "Type": "String",
+      "Default": "Oregon-Key-Pair"
+    },
     "InstanceType" : {
       "Description" : "EC2 instance type",
       "Type" : "String",
@@ -58,7 +63,7 @@
     "EC2Instance" : {
       "Type" : "AWS::EC2::Instance",
       "Properties" : {
-        "KeyName": "Oregon-Key-Pair",
+        "KeyName": {"Ref" : "KeyPairName"},
         "SubnetId": {"Ref" : "SubnetId"},
         "InstanceType" : { "Ref" : "InstanceType" },
         "SecurityGroupIds" : [ { "Ref" : "SecurityGroupId" } ],

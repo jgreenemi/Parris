@@ -142,6 +142,22 @@ def stack_creator(testmode=False):
                     {
                         'ParameterKey': 'UserDataScript',
                         'ParameterValue': str(userdata_script)
+                    },
+                    {
+                        'ParameterKey': 'InstanceType',
+                        'ParameterValue': training_config.get('instance-type', '')
+                    },
+                    {
+                        'ParameterKey': 'SecurityGroupId',
+                        'ParameterValue': training_config.get('security-group-id', '')
+                    },
+                    {
+                        'ParameterKey': 'SubnetId',
+                        'ParameterValue': training_config.get('subnet-id', '')
+                    },
+                    {
+                        'ParameterKey': 'KeyPairNames',
+                        'ParameterValue': training_config.get('ec2-keypair-name', '')
                     }
                 ]
             )

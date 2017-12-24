@@ -3,9 +3,15 @@
   "training-job-name": "Test-Training-Job",
   "training-script-filename": "trainer-script.sh",
   "cloudformation_template_filename": "cloudformation.json",
-  "termination-method": "cost-limit",
+  "termination-method": "training-completion",
   "termination-options": {
     "time-limit": 10.0,
     "cost-limit": 300.0
+  },
+  "stack-settings": {
+    "instance-type": "p2.xlarge",
+    "security-group-id": "sg-2ff91848",
+    "subnet-id": "subnet-634f5c06",
+    "ec2-keypair-name": "Oregon-Key-Pair"
   }
 }
