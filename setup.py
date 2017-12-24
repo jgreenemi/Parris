@@ -11,7 +11,7 @@ import os
 import zipfile
 
 
-def lambda_packer(config={}):
+def lambda_packer():
     """
     To create the Lambda function we need to pack up a ZIP file to upload. Returns true if the ZIP archive is created,
     False is something goes wrong. If it succeeds, the second item in the returned tuple object is the 'lambdapack'
@@ -19,9 +19,6 @@ def lambda_packer(config={}):
     :return:
     """
     try:
-        if not config:
-            raise Exception('lambda_packer is missing a config. Needed for setting a Lambda function name.')
-
         # Create a ZIP archive, with compression. The files in `config/` and `src/` are the only ones we need to include
         # for the Lambda to function, but in case you have custom needs you can add the necessary directories under this
         # dict.
@@ -42,7 +39,7 @@ def lambda_packer(config={}):
                 for root, dir, filename in os.walk(dirname):
                     for individual_file in filename:
                         composite_filename = os.path.join(root, individual_file)
-                        logging.warning('Adding: {}'.format(composite_filename))
+                        logging.debug('Adding: {}'.format(composite_filename))
 
                         # AWS Lambda functions are expected to have the handler at the top level of the package.
                         # If you have other scripts like lambda-function.py that need to be in the root of the package,
@@ -61,7 +58,7 @@ def lambda_packer(config={}):
         return [False, msg]
 
 
-def lambda_creation(config={}, lambdapack='', lambda_role_arn=''):
+def lambda_creation(lambda_config={}, lambdapack=''):
     """
     Create the lambda function, return the response, give the AWS CLI command to execute it.
     :return:
@@ -72,21 +69,8 @@ def lambda_creation(config={}, lambdapack='', lambda_role_arn=''):
         # AWS account than their environment variables are set.
         client_lambda = boto3.client('lambda')
 
-        # Set or create an IAM role for the Lambda function to use. This is equal to the ARN of that role.
-        # IAM role must have at a minimum:
-        #  cloudformation:CreateStack
-        #  cloudformation:ValidateTemplate
-        #  ec2:RunInstances
-        #  ec2:DescribeInstances
-        #  ec2:DescribeInstancesStatus
-        #  ec2:TerminateInstances
-        # TODO Put this into the documentation.
-
         # TODO Make the IAM role configurable by user for what they may need from it. Since this'll be job-agnostic,
         # assume it needs read/write to S3, CFN launch, EC2 tag describe, and nothing else.
-        if not lambda_role_arn:
-            lambda_role_arn = 'arn:aws:iam::277012880214:role/Lambda_CFN_CreateAndValidate'
-
         # TODO Allow training-job config to specify if this function should be noclobber if exists. Doesn't really
         # need to be in the training-job config if the Lambda function will be job-agnostic though.
 
@@ -95,7 +79,7 @@ def lambda_creation(config={}, lambdapack='', lambda_role_arn=''):
             creation_response = client_lambda.create_function(
                 FunctionName='Parris-v1-Lambda',
                 Runtime='python3.6',
-                Role=lambda_role_arn,
+                Role=lambda_config['lambda_role_arn'],
                 Handler='lambda-function.lambda_handler',
                 Code={
                     'ZipFile': open(lambdapack_filepath, mode='rb').read()
@@ -146,7 +130,7 @@ def parse_config():
     :return:
     """
     try:
-        config = json.load(open('config/config.json'))
+        config = json.load(open('config/lambda-config.json'))
         return config
     
     except Exception as e:
@@ -161,8 +145,7 @@ def _test_lambda_packer():
     :return:
     """
     try:
-        config = parse_config()
-        lambda_packer(config)
+        lambda_packer()
         return [True, '']
 
     except Exception as e:
@@ -177,8 +160,8 @@ def _test_lambda_creation():
     :return:
     """
     try:
-        config = parse_config()
-        lambda_creation(config)
+        lambda_config = parse_config()
+        lambda_creation(lambda_config)
         return [True, '']
     
     except Exception as e:
@@ -194,8 +177,8 @@ def _test_parse_config():
     :return:
     """
     try:
-        config = parse_config()
-        logging.debug('Config parsed, training-job-name set to: {}'.format(config['training-job-name']))
+        lambda_config = parse_config()
+        logging.debug('Config parsed, training-job-name set to: {}'.format(lambda_config['lambda_role_arn']))
         return [True, '']
     
     except Exception as e:
@@ -225,9 +208,10 @@ if __name__ == '__main__':
     # made up, but this is likely the option you want.
     try:
         # TODO Move these to their own function, likely lambda_creation, name them for internal functions per PEP8.
-        config = parse_config()
-        lambdapack_successfail, lambdapack_filepath = lambda_packer(config=config)
-        lambda_creation(config=config, lambdapack=lambdapack_filepath)
+        lambda_config = parse_config()
+        lambdapack_successfail, lambdapack_filepath = lambda_packer()
+        lambda_creation(lambda_config=lambda_config)
+        #config=config, lambdapack=lambdapack_filepath)
 
     except Exception as e:
         msg = '_test_parse_config failure: {}'.format(e)
