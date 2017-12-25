@@ -11,6 +11,6 @@
   "instance-type": "p2.xlarge",
   "security-group-id": "sg-2ff91848",
   "subnet-id": "subnet-634f5c06",
-  "ec2-keypair-name": "Oregon-Key-Pair"
-
+  "ec2-keypair-name": "Oregon-Key-Pair",
+  "stack-replacement": true
 }

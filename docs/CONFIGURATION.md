@@ -86,3 +86,10 @@ A string describing the trainer-script filename that this particular training jo
  In either case, Lambda will feed the trainer-script into the CloudFormation template for you when launching the CloudFormation stack, and it'll run as the EC2 instance userdata script - basically the first script that is run on the server after it has been spun up. 
 
 * Example: `trainer-script.sh`
+
+
+### `stack-replacement` ###
+
+A Boolean value for deciding how to handle a pre-existing CloudFormation stack. Let's say you run the Lambda function twice for this particular training job. The Lambda function will, on its second execution, see that there's already a CloudFormation stack for your training job. With this value set to `true`, the Lambda function will fire an update of that stack, which can involve a terminate and replacement of that EC2 instance. In other words, if you're keeping your training results on the instance instead of having your trainer-script, you definitely do not want this to be set. 
+
+On the other hand, if this parameter is set to `false` or if you omit it from the config altogether, the function will just error out and leave the existing stack in place. If you're saving your training results on the instance, this is likely the option you want.

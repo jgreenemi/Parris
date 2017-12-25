@@ -134,38 +134,78 @@ def stack_creator(testmode=False):
 
             msg = 'CloudFormation template passed validation!'
         else:
-            create_stack_response = client_cfn.create_stack(
-                StackName='parris-stack',
-                TemplateBody='{}'.format(cfn_template_contents),
-                OnFailure='DELETE',
-                Parameters=[
-                    {
-                        'ParameterKey': 'UserDataScript',
-                        'ParameterValue': str(userdata_script)
-                    },
-                    {
-                        'ParameterKey': 'InstanceType',
-                        'ParameterValue': training_config.get('instance-type', '')
-                    },
-                    {
-                        'ParameterKey': 'SecurityGroupId',
-                        'ParameterValue': training_config.get('security-group-id', '')
-                    },
-                    {
-                        'ParameterKey': 'SubnetId',
-                        'ParameterValue': training_config.get('subnet-id', '')
-                    },
-                    {
-                        'ParameterKey': 'KeyPairName',
-                        'ParameterValue': training_config.get('ec2-keypair-name', '')
-                    }
-                ]
-            )
+            try:
+                create_stack_response = client_cfn.create_stack(
+                    StackName='parris-stack',
+                    TemplateBody='{}'.format(cfn_template_contents),
+                    OnFailure='DELETE',
+                    Parameters=[
+                        {
+                            'ParameterKey': 'UserDataScript',
+                            'ParameterValue': str(userdata_script)
+                        },
+                        {
+                            'ParameterKey': 'InstanceType',
+                            'ParameterValue': training_config.get('instance-type', '')
+                        },
+                        {
+                            'ParameterKey': 'SecurityGroupId',
+                            'ParameterValue': training_config.get('security-group-id', '')
+                        },
+                        {
+                            'ParameterKey': 'SubnetId',
+                            'ParameterValue': training_config.get('subnet-id', '')
+                        },
+                        {
+                            'ParameterKey': 'KeyPairName',
+                            'ParameterValue': training_config.get('ec2-keypair-name', '')
+                        }
+                    ]
+                )
 
-            msg = 'CloudFormation stack has started launching successfully!'
+                msg = 'CloudFormation stack has started launching successfully!'
+
+            except Exception as create_err:
+                # If the training-config is set to allow stack replacements and the create function above failed,
+                # update the existing stack.
+                if training_config.get('stack-replacement', False) and 'AlreadyExistsException' in str(create_err):
+                    update_stack_response = client_cfn.update_stack(
+                        StackName='parris-stack',
+                        TemplateBody='{}'.format(cfn_template_contents),
+                        Parameters=[
+                            {
+                                'ParameterKey': 'UserDataScript',
+                                'ParameterValue': str(userdata_script)
+                            },
+                            {
+                                'ParameterKey': 'InstanceType',
+                                'ParameterValue': training_config.get('instance-type', '')
+                            },
+                            {
+                                'ParameterKey': 'SecurityGroupId',
+                                'ParameterValue': training_config.get('security-group-id', '')
+                            },
+                            {
+                                'ParameterKey': 'SubnetId',
+                                'ParameterValue': training_config.get('subnet-id', '')
+                            },
+                            {
+                                'ParameterKey': 'KeyPairName',
+                                'ParameterValue': training_config.get('ec2-keypair-name', '')
+                            }
+                        ]
+                    )
+
+                    msg = 'CloudFormation stack has updated successfully!'
+                
+                # If the training config is not set to allow stack updates, or if the returned error wasn't 
+                # AlreadyExistsException, pass this up to the parent catch block.
+                else:
+                    raise Exception(create_err)
 
         logging.warning(msg)
         return True, msg
+
     except Exception as e:
         err = 'stack_creator failure: {}'.format(e)
         logging.error(err)
