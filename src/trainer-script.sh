@@ -10,7 +10,7 @@
 
 # Run setup of your training session. Your commands will invariably look different.
 cd /tmp
-touch /tmp/updatesucceeded
+
 yum update -y
 yum install -y git python36 libgfortran libgomp
 git clone https://github.com/jgreenemi/MXNet-Familiarity-Project.git
