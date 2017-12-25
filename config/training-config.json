@@ -8,7 +8,7 @@
     "time-limit": 10.0,
     "cost-limit": 300.0
   },
-  "instance-type": "p2.xlarge",
+  "instance-type": "t2.micro",
   "security-group-id": "sg-2ff91848",
   "subnet-id": "subnet-634f5c06",
   "ec2-keypair-name": "Oregon-Key-Pair",

@@ -141,6 +141,10 @@ def stack_creator(testmode=False):
                     OnFailure='DELETE',
                     Parameters=[
                         {
+                            'ParameterKey': 'TrainingJobName',
+                            'ParameterValue': training_config.get('training-job-name', '')
+                        },
+                        {
                             'ParameterKey': 'UserDataScript',
                             'ParameterValue': str(userdata_script)
                         },
@@ -173,6 +177,10 @@ def stack_creator(testmode=False):
                         StackName='parris-stack',
                         TemplateBody='{}'.format(cfn_template_contents),
                         Parameters=[
+                            {
+                                'ParameterKey': 'TrainingJobName',
+                                'ParameterValue': training_config.get('training-job-name', '')
+                            },
                             {
                                 'ParameterKey': 'UserDataScript',
                                 'ParameterValue': str(userdata_script)

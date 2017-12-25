@@ -2,6 +2,11 @@
   "AWSTemplateFormatVersion" : "2010-09-09",
   "Description" : "Create stack for Parris ML training job. This is being launched using an example template, and as such will likely need some parameters changed for your environment.",
   "Parameters" : {
+    "TrainingJobName": {
+      "Description": "The name of this training job. Gets used to name your EC2 instance so it's easier to identify.",
+      "Type": "String",
+      "Default": "Parris-Training-Instance"
+    },
     "UserDataScript": {
       "Description": "The full text of your trainer-script file.",
       "Type": "String"
@@ -63,6 +68,12 @@
     "EC2Instance" : {
       "Type" : "AWS::EC2::Instance",
       "Properties" : {
+        "Tags": [
+          {
+          "Key": "Name",
+          "Value": { "Ref": "TrainingJobName" }
+          }
+        ],
         "KeyName": {"Ref" : "KeyPairName"},
         "SubnetId": {"Ref" : "SubnetId"},
         "InstanceType" : { "Ref" : "InstanceType" },

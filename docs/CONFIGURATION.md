@@ -29,6 +29,7 @@ If you're trying to create one of those and are totally clueless as to what shou
                 "ec2:TerminateInstances",
                 "ec2:RunInstances",
                 "cloudformation:CreateStack",
+                "cloudformation:UpdateStack",
                 "cloudformation:ValidateTemplate"
             ],
             "Resource": "*"
