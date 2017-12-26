@@ -8,6 +8,11 @@
 # You'll want to include some kind of logging facility with this script
 # in case things go wrong.
 
+# First, set up a hard shutdown rule to prevent the training stack from running indefinitely.
+# This should be pulled from the training-config, slotted in during the CFN template loading
+# function.
+sudo poweroff ${TERMINATION_TIME_LIMIT} &
+
 # Run setup of your training session. Your commands will invariably look different.
 cd /tmp
 
@@ -27,4 +32,4 @@ python3 classifier/trainer.py
 
 # If the script has completed, go ahead and turn off the server to eliminate any
 # additional costs.
-poweroff now
+# poweroff now

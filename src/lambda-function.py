@@ -125,14 +125,32 @@ def stack_creator(testmode=False):
             trainer_script_name=training_config.get('training-script-filename', '')
         )
 
+        # In the userdata script there may be a termination command. If there is one, do a string replacement with the
+        # time limit configured in the training-config.
+        try:
+            termination_value = 0
+            if 'at-fixed-time' in training_config.get('termination-method', ''):
+                termination_value = training_config['time-limit']
+            # elif 'around-cost' in training_config.get('termination-method', ''):
+                # TODO Do some maths here based on the instance type in use to determine what the time-limit should be set
+                # to. Disabling for now as this is not ready for use.
+                # termination_value = #...
+
+            userdata_script = userdata_script.replace('${TERMINATION_TIME_LIMIT}', termination_value)
+            logging.warning('Updated userdata with {} minute termination window.'.format(termination_value))
+
+        except:
+            # If the string replacement fails, no worry - just means there's no termination command to modify.
+            pass
+
         client_cfn = boto3.client('cloudformation')
 
         if testmode:
             create_stack_response = client_cfn.validate_template(
                 TemplateBody='{}'.format(cfn_template_contents)
             )
-
             msg = 'CloudFormation template passed validation!'
+
         else:
             try:
                 create_stack_response = client_cfn.create_stack(
