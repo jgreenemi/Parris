@@ -136,7 +136,7 @@ def stack_creator(testmode=False):
         else:
             try:
                 create_stack_response = client_cfn.create_stack(
-                    StackName='parris-stack',
+                    StackName=training_config.get('training-job-name', 'parris-stack'),
                     TemplateBody='{}'.format(cfn_template_contents),
                     OnFailure='DELETE',
                     Parameters=[
@@ -174,7 +174,7 @@ def stack_creator(testmode=False):
                 # update the existing stack.
                 if training_config.get('stack-replacement', False) and 'AlreadyExistsException' in str(create_err):
                     update_stack_response = client_cfn.update_stack(
-                        StackName='parris-stack',
+                        StackName=training_config.get('training-job-name', 'parris-stack'),
                         TemplateBody='{}'.format(cfn_template_contents),
                         Parameters=[
                             {
