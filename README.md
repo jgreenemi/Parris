@@ -4,7 +4,9 @@
 
 Parris, the automated training tool for machine learning algorithms.
 
-### Setup ###
+## ##
+
+## Setup ##
 
 You'll need an AWS account, AWS credentials loaded to your workstation (set up through `$ aws configure`), a machine learning algorithm to train, and of course a dataset that it can be trained on. You'll also likely want an S3 bucket or some other storage location for your algorithm's training results.
 
@@ -28,25 +30,9 @@ pip 9.0.1 from ...\python\python36\lib\site-packages (python 3.6)
 (env) $ pip install -r requirements.txt 
 ```
 
-### Roadmap ###
-
-#### MVP ####
-
-* Time-limit and cost-limit termination routines are implemented in the launched instance.
-
-#### Iteration I ####
-
-* Testing capabilities are implemented, so checks of the training routine are done before the instance is launched. (Catch failures early to save on costs from finding them after the instance has been launched.)
-* IoT button integration with a demo Lambda function and trainer routine.
-* IoT button is set up for public demo.
-
-#### Iteration II ####
-
-* .
-
-
 ### FAQ ###
 
+Consult the [FAQ page in the documentation](/docs/FAQ.md) as many questions are answered there. If your question was not answered, please get in touch, either via a new Github Issue (preferred) or via an email below. The former is preferred as others with the same question can benefit from seeing the answer posted publicly.
 
 ### Contact ###
 
