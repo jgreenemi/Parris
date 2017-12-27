@@ -1,16 +1,31 @@
 # Getting Started with Parris #
 
-Here's how you can go from 
+Here's how you can go from launching training tasks by hand, to launching them with a single click of a button, single command, single script, etc.! 
+
+## An Overview ##
+
+Parris is a tool that:
+
+* creates a Lambda function
+* launches a CloudFormation stack when the Lambda function is invoked
+* runs a UserData script on the stack's EC2 instance when it is first launched, that kicks off your training job
+* stops the EC2 instance when it has finished.
+
+The primary purpose of this tool is to reduce the amount of repetitive setup it takes for you to train your machine learning algorithms, and in doing so save some cost by utilizing your server's compute hours more effectively (server starts the training jobh as soon as it's launched, and stops when you've configured it to stop).
 
 ## What You Need Before Starting ##
 
-Follow the setup notes in the README. Also, you will need a machine learning algorithm with its dataset, ready to be trained, and a Bash script that will kick off that training job. 
+Follow the setup notes in the README. You will need a machine learning algorithm with its dataset, ready to be trained, and a Bash script that will kick off that training job. 
 
 If that sounds like a lot, don't worry - this package comes with an example trainer-script to give you an idea of what all is involved if you haven't yet made one. Now, if that sounds like a lot because your algorithm is not yet in a state to be trained or does not have a dataset prepared, then you will not be able to take advantage of this tool, so do make sure you have all that ready to go before starting.
 
 ### A Note About Retrieving Your Training Results ###
 
 Your trainer-script, or the algorithm itself, needs to push its training results out to an external location (out to another server, an S3 bucket, etc.). The CloudFormation stack you launch is intended to be terminated after you're done training, and as such is ephemeral in nature. Storing the training results on that server for any stretch of time is not recommended.
+
+## 0. Preparing Your Configs ##
+
+Your main interactions with this tool, after it is properly set up, will be editing the `training-config.json` configuration file, and the `trainer-script.sh` script that actually runs your training job. 
 
 ## 1. Preparing Your Lambda Function ##
 

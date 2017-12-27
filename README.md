@@ -4,7 +4,9 @@
 
 Parris, the automated training tool for machine learning algorithms.
 
-## ##
+## What Is This Tool? ##
+
+Parris is a tool for automating the training of machine learning algorithms. If you're the kind of person that works on ML algorithms and spends too much time setting up a server to run it on, having to log into it to monitor its progress, etc., then you will find this tool helpful. No need to SSH into instances to get your training jobs done!
 
 ## Setup ##
 
@@ -30,11 +32,11 @@ pip 9.0.1 from ...\python\python36\lib\site-packages (python 3.6)
 (env) $ pip install -r requirements.txt 
 ```
 
-### FAQ ###
+## FAQ ##
 
 Consult the [FAQ page in the documentation](/docs/FAQ.md) as many questions are answered there. If your question was not answered, please get in touch, either via a new Github Issue (preferred) or via an email below. The former is preferred as others with the same question can benefit from seeing the answer posted publicly.
 
-### Contact ###
+## Contact ##
 
 * Joseph Greene, [jgreenemi@gmail.com](mailto:jgreenemi@gmail.com)
 
