@@ -25,7 +25,103 @@ Your trainer-script, or the algorithm itself, needs to push its training results
 
 ## 0. Preparing Your Configs ##
 
-Your main interactions with this tool, after it is properly set up, will be editing the `training-config.json` configuration file, and the `trainer-script.sh` script that actually runs your training job. 
+Your main interactions with this tool, after it is properly set up, will be editing the `training-config.json` configuration file, and the `trainer-script.sh` script that actually runs your training job. Since we're getting set up for the first time, you'll want to also set up your `lambda-config.json` configuration file. (That one should be real easy since it's only two lines, one of which being optional.)
+
+The configs as supplied are examples for a basic training job using one of the repositories on my Github, to give you an idea of what one will look like. With the exception of some account-specific things like IAM role ARN values and S3 bucket names, you could run this as-is. So let's start with some of those.
+
+1. In the [`training-config`](/config/training-config.json): 
+    1. Change your `subnet-id` to the ID of one of your Subnets. (Don't know what this is? Make sure you've [set up your AWS Account with a VPC, Subnet, Security Group, and EC2 Keypair.](http://docs.aws.amazon.com/AmazonVPC/latest/GettingStartedGuide/getting-started-ipv4.html) There should be some default resources in your account that you can use if this is your first time using AWS.)
+    1. Change your `security-group-id` to a Security Group in your VPC.
+    1. Change your `ec2-keypair-name` to an EC2 keypair of your own.
+    1. All other parameters in the training-config can remain unchanged, unless you wish to. Consult [the CONFIGURATION document](/docs/CONFIGURATION.md) for what each parameter is about. 
+1. In the [`lambda-config.json`](/config/lambda-config.json):
+    1. Update the `lambda-role-arn` to the ARN value of an IAM role of your own. (Don't know what this is? [Have a look through the Lambda IAM Execution Role guide.](http://docs.aws.amazon.com/lambda/latest/dg/with-s3-example-create-iam-role.html) An example policy you can use is below.) 
+
+When setting up your IAM Role, you'll need to attach a Policy (or multiple Policies) to the Role to define what all your Lambda function can access. The one I use is as follows, and lets your Lambda function start up new CloudFormation stacks, get objects from your S3 buckets, and do a lot with EC2 instances: 
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "cloudformation:CreateStack",
+                "cloudformation:UpdateStack",
+                "cloudformation:ValidateTemplate",
+                "ec2:DetachVolume",
+                "ec2:AttachVolume",
+                "ec2:ModifyVolume",
+                "ec2:ModifyVolumeAttribute",
+                "ec2:DescribeInstances",
+                "ec2:TerminateInstances",
+                "ec2:DescribeTags",
+                "ec2:CreateTags",
+                "ec2:DescribeVolumesModifications",
+                "ec2:RunInstances",
+                "ec2:StopInstances",
+                "ec2:DescribeVolumeAttribute",
+                "ec2:CreateVolume",
+                "ec2:DeleteVolume",
+                "ec2:DescribeVolumeStatus",
+                "ec2:StartInstances",
+                "ec2:DescribeVolumes",
+                "ec2:ModifyInstanceAttribute",
+                "ec2:DescribeInstanceStatus",
+                "s3:GetObject"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+
+I highly recommend (though it's not required) having a Policy made up for allow Lambda to write to a CloudWatch logstream. When something goes wrong with your Lambda function, you'll want to be able to read the logs to find out what's going on. Here's one I use that's literally all the CloudWatch Write permissions in one Policy, 'cause that was easiest to set up with the visual editor:
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "logs:DeleteSubscriptionFilter",
+                "logs:DeleteLogStream",
+                "logs:CreateExportTask",
+                "logs:DeleteResourcePolicy",
+                "logs:CreateLogStream",
+                "logs:DeleteMetricFilter",
+                "logs:TagLogGroup",
+                "logs:CancelExportTask",
+                "logs:DeleteRetentionPolicy",
+                "logs:GetLogEvents",
+                "logs:AssociateKmsKey",
+                "logs:FilterLogEvents",
+                "logs:PutDestination",
+                "logs:DisassociateKmsKey",
+                "logs:UntagLogGroup",
+                "logs:DeleteLogGroup",
+                "logs:PutDestinationPolicy",
+                "logs:TestMetricFilter",
+                "logs:DeleteDestination",
+                "logs:PutLogEvents",
+                "logs:CreateLogGroup",
+                "logs:PutMetricFilter",
+                "logs:PutResourcePolicy",
+                "logs:PutSubscriptionFilter",
+                "logs:PutRetentionPolicy"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+
+It's way more than necessary, but that's what I have in use at the moment.
+
+Finally, we need to set up the `trainer-script.sh` so it'll actually run your training job. This part should be almost entirely written by you, as your algorithm's dependencies 
 
 ## 1. Preparing Your Lambda Function ##
 

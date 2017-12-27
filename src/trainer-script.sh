@@ -3,16 +3,21 @@
 # You'll want to verify that this functions as expected before launching
 # an expensive instance type with it, as simple typos can become costly
 # if you're launching and terminating instances every time you have a
-# bug.
+# bug. Starting with a t2.micro to test your first stack is a safe bet.
 
-# You'll want to include some kind of logging facility with this script
-# in case things go wrong.
+# The following line is for the "at-fixed-time" termination method. Do
+# not change this line unless you know what you're doing.
+printf "%s\n" "Received TERMINATION_TIME_LIMIT value of ${TERMINATION_TIME_LIMIT}, executing: shutdown -h +${TERMINATION_TIME_LIMIT} &"
+shutdown -h +${TERMINATION_TIME_LIMIT} &
 
-# First, set up a hard shutdown rule to prevent the training stack from running indefinitely.
-# This should be pulled from the training-config, slotted in during the CFN template loading
-# function.
-printf "%s\n" "Received TERMINATION_TIME_LIMIT value of ${TERMINATION_TIME_LIMIT}, executing: sudo shutdown -h +${TERMINATION_TIME_LIMIT} &"
-sudo shutdown -h +${TERMINATION_TIME_LIMIT} &
+########################################################################
+# Do not change the contents above this line unless you know what you're
+# doing.
+#
+# Your custom training commands go below this comment! Everything below
+# this line is just for example and can be deleted.
+########################################################################
+
 
 # Run setup of your training session. Your commands will invariably look different.
 cd /tmp
@@ -23,8 +28,8 @@ git clone https://github.com/jgreenemi/MXNet-Familiarity-Project.git
 cd MXNet-Familiarity-Project
 python3 -m pip install -r requirements.txt
 
-# Pull down the necessary datasets. Keep in my the EC2 instance needs an S3 read IAM role
-# to pull from S3.
+# Pull down the necessary datasets. Keep in mind the EC2 instance needs an IAM
+# role for s3:GetObject to pull data from S3.
 mkdir data & cd data
 aws s3 cp s3://com.jgreenemi.mlbucket/ml-datasets/example-tpp-data/ . --recursive
 
@@ -33,4 +38,4 @@ python3 classifier/trainer.py
 
 # If the script has completed, go ahead and turn off the server to eliminate any
 # additional costs.
-# poweroff now
+poweroff now
