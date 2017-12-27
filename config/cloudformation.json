@@ -29,19 +29,41 @@
     "InstanceType" : {
       "Description" : "EC2 instance type",
       "Type" : "String",
-      "Default" : "t2.micro",
-      "AllowedValues" : [
-        "t2.micro",
-        "p2.xlarge"
-      ],
+      "Default" : "p3.2xlarge",
       "ConstraintDescription" : "Invalid EC2 instance type - note that some instance types are not enabled by default in the CFN template."
     }
   },
 
   "Mappings" : {
     "AWSInstanceType2Arch" : {
-      "t2.micro"    : { "Arch" : "HVM64"  },
-      "p2.xlarge" : { "Arch" : "HVM64"  }
+      "t2.micro" : { "Arch" : "HVM64" },
+      "c4.large" : { "Arch" : "HVM64" },
+      "c4.xlarge" : { "Arch" : "HVM64" },
+      "c4.2xlarge" : { "Arch" : "HVM64" },
+      "c4.4xlarge" : { "Arch" : "HVM64" },
+      "c4.8xlarge" : { "Arch" : "HVM64" },
+      "c5.large" : { "Arch" : "HVM64" },
+      "c5.xlarge" : { "Arch" : "HVM64" },
+      "c5.2xlarge" : { "Arch" : "HVM64" },
+      "c5.4xlarge" : { "Arch" : "HVM64" },
+      "c5.9xlarge" : { "Arch" : "HVM64" },
+      "c5.18xlarge" : { "Arch" : "HVM64" },
+      "p2.xlarge" : { "Arch" : "HVM64" },
+      "p2.8xlarge" : { "Arch" : "HVM64" },
+      "p2.16xlarge" : { "Arch" : "HVM64" },
+      "p3.2xlarge" : { "Arch" : "HVM64" },
+      "p3.8xlarge" : { "Arch" : "HVM64" },
+      "p3.16xlarge" : { "Arch" : "HVM64" },
+      "g2.2xlarge" : { "Arch" : "HVM64" },
+      "g2.8xlarge" : { "Arch" : "HVM64" },
+      "g3.4xlarge" : { "Arch" : "HVM64" },
+      "g3.8xlarge" : { "Arch" : "HVM64" },
+      "r4.large" : { "Arch" : "HVM64" },
+      "r4.xlarge" : { "Arch" : "HVM64" },
+      "r4.2xlarge" : { "Arch" : "HVM64" },
+      "r4.4xlarge" : { "Arch" : "HVM64" },
+      "r4.8xlarge" : { "Arch" : "HVM64" },
+      "r4.16xlarge" : { "Arch" : "HVM64" }
     },
     "AWSRegionArch2AMI" : {
       "us-east-1"        : {"PV64" : "ami-2a69aa47", "HVM64" : "ami-6869aa05", "HVMG2" : "ami-1f12e965"},
@@ -83,23 +105,13 @@
           "Fn::FindInMap" : [
             "AWSRegionArch2AMI",
             { "Ref" : "AWS::Region" },
-            {
-              "Fn::FindInMap" : [
-                "AWSInstanceType2Arch",
-                { "Ref" : "InstanceType" },
-                "Arch"
-              ]
-            }
+            { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "InstanceType" }, "Arch" ] }
           ]
         },
         "UserData": {
           "Fn::Base64" : {
             "Fn::Join" : [
-              "", [
-                {
-                "Ref" : "UserDataScript"
-                }
-              ]
+              "", [ { "Ref" : "UserDataScript" } ]
             ]
           }
         }
@@ -109,19 +121,19 @@
 
   "Outputs" : {
     "InstanceId" : {
-      "Description" : "InstanceId of the newly created EC2 instance",
+      "Description" : "EC2 Instance created for this stack.",
       "Value" : { "Ref" : "EC2Instance" }
     },
     "AZ" : {
-      "Description" : "Availability Zone of the newly created EC2 instance",
+      "Description" : "Availability Zone into which that instance was launched.",
       "Value" : { "Fn::GetAtt" : [ "EC2Instance", "AvailabilityZone" ] }
     },
     "PublicDNS" : {
-      "Description" : "Public DNSName of the newly created EC2 instance",
+      "Description" : "The publicly-reachable DNS endpoint for this instance.",
       "Value" : { "Fn::GetAtt" : [ "EC2Instance", "PublicDnsName" ] }
     },
     "PublicIP" : {
-      "Description" : "Public IP address of the newly created EC2 instance",
+      "Description" : "The publicly-reachable IPv4 address for this instance.",
       "Value" : { "Fn::GetAtt" : [ "EC2Instance", "PublicIp" ] }
     }
   }
