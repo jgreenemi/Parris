@@ -36,5 +36,5 @@ Consult the [FAQ page in the documentation](/docs/FAQ.md) as many questions are 
 
 ### Contact ###
 
-* Joseph Greene, jgreenemi@gmail.com
+* Joseph Greene, [jgreenemi@gmail.com](mailto:jgreenemi@gmail.com)
 
