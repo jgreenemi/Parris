@@ -74,14 +74,14 @@ Options: `[at-fixed-time, training-completion, around-cost]`
 
 ### `termination-options` ###
 
-For the aforementioned termination methods, some will have parameters. Obviously, use the appropriate parameter set for the method you choose. (Having multiple options defined in the config file is valid, but only the optionset necessary for your chosen termination method will be used.) `time-limit` is measured in minutes (decimals are valid), and `cost-limit` is the total anticipated cost in USD, based on the published AWS compute costs.
+For the aforementioned termination methods, some will have parameters. Obviously, use the appropriate parameter set for the method you choose. (Having multiple options defined in the config file is valid, but only the optionset necessary for your chosen termination method will be used.) `time-limit` is measured in minutes (decimals are NOT valid and will fail silently), and `cost-limit` is the total anticipated cost in USD, based on the published AWS compute costs.
 
 Do note that the `cost-limit` parameter is an estimation, and **is not a guarantee that your resource usage bill will remain under this limit.** 
 
 * Options: 
 ```
 "termination-options": {
-  "time-limit": 10.0,
+  "time-limit": 10,
   "cost-limit": 300
 }
 ``` 
