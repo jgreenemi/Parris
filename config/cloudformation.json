@@ -36,7 +36,13 @@
 
   "Mappings" : {
     "AWSInstanceType2Arch" : {
+      "t2.nano" : { "Arch" : "HVM64" },
       "t2.micro" : { "Arch" : "HVM64" },
+      "t2.small" : { "Arch" : "HVM64" },
+      "t2.medium" : { "Arch" : "HVM64" },
+      "t2.large" : { "Arch" : "HVM64" },
+      "t2.xlarge" : { "Arch" : "HVM64" },
+      "t2.2xlarge" : { "Arch" : "HVM64" },
       "c4.large" : { "Arch" : "HVM64" },
       "c4.xlarge" : { "Arch" : "HVM64" },
       "c4.2xlarge" : { "Arch" : "HVM64" },

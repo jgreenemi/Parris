@@ -18,6 +18,10 @@ Yes! You are free to use whichever OS your needs dictate. To change what your se
 
 I believe so, but this has not been tested. This was written, tested, and intended for use with Python versions 3+.
 
+## There are a lot of instance types not listed in the CloudFormation template. Am I restricted to only using c4/c5/p2/p3/g3/etc. instances? ##
+
+Nope! I added in instance types that are common/best-suited for use in machine learning (GPU, memory and compute-focused types), but there's no reason you can't add in others as they suit your needs or as new types come available. Generally speaking you should be set with what is listed, but one size does not fit all, so feel free to add new mappings into the `AWSInstanceType2Arch` dictionary in your template.
+
 ## Do I need to delete each CloudFormation stack by hand when training has finished? ##
 
 Yes, for the time being. Later updates will introduce proper termination logic so you don't need to do this, but for now the stack will just shut itself down on completion based on the `termination-method` you set in the `training-config.json` file.
