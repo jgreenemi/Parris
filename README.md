@@ -18,7 +18,7 @@ $ git clone https://github.com/jgreenemi/parris.git && cd parris
 $ virtualenv -p python3 env
 $ source env/bin/activate
 (env) $ pip --version
-pip 9.0.1 from ...\python\python36\lib\site-packages (python 3.6)
+pip 9.0.1 from .../env/lib/python3.6/site-packages (python 3.6)
 (env) $ pip install -r requirements.txt 
 ```
 
@@ -26,7 +26,7 @@ Windows:
 ```bash
 $ git clone https://github.com/jgreenemi/parris.git && cd parris
 $ virtualenv -p python3.exe env
-$ env/Scripts/activate
+$ env\Scripts\activate
 (env) $ pip --version
 pip 9.0.1 from ...\python\python36\lib\site-packages (python 3.6)
 (env) $ pip install -r requirements.txt 
