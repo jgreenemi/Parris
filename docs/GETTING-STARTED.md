@@ -121,7 +121,21 @@ I highly recommend (though it's not required) having a Policy made up for allow 
 
 It's way more than necessary, but that's what I have in use at the moment.
 
-Finally, we need to set up the `trainer-script.sh` so it'll actually run your training job. This part should be almost entirely written by you, as your algorithm's dependencies 
+Finally, we need to set up the `trainer-script.sh` so it'll actually run your training job. This part should be almost entirely written by you, as your algorithm's dependencies and your method for pushing out the training results will invariably differ from what I have shown.
+
+1. In `trainer-script.sh`:
+    1. Scroll to the section below the very obvious comment saying to edit everything below it. Add in your complete training script below that line. Keep in mind that your training script is being launched on a fresh server, so all setup of dependencies, directory structure, etc. needs to be done before launching your training job. For example, if you need a different version of Python installed or if you need to clone a Git repo, make sure all those steps are included.
+    
+Once that is done, you are nearly set to get started using the tool! If you are **NOT** using an `s3-training-bucket` value in your `lambda-config.json`, then you are ready to go - proceed to the next step. If you are using an S3 bucket for loading your configs, you'll need to load the following files in your S3 bucket such that its resulting structure looks like so (as in no subdirectories or differing filenames):
+
+```bash
++---MyS3Bucket
+|   \---trainer-script.sh
+|   \---training-config.json
+|   \---lambda-config.json
+```
+
+Once that's ready to go, then you can proceed to the next step.
 
 ## 1. Preparing Your Lambda Function ##
 
