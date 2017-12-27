@@ -4,7 +4,7 @@
   "training-script-filename": "trainer-script.sh",
   "cloudformation_template_filename": "cloudformation.json",
   "termination-method": "at-fixed-time",
-  "time-limit": 3.0,
+  "time-limit": 10.0,
   "cost-limit": 300.0,
   "instance-type": "t2.micro",
   "security-group-id": "sg-2ff91848",
