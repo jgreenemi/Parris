@@ -126,22 +126,19 @@ def stack_creator(testmode=False):
         )
 
         # In the userdata script there may be a termination command. If there is one, do a string replacement with the
-        # time limit configured in the training-config.
-        try:
-            termination_value = 0
-            if 'at-fixed-time' in training_config.get('termination-method', ''):
-                termination_value = training_config['time-limit']
-            # elif 'around-cost' in training_config.get('termination-method', ''):
-                # TODO Do some maths here based on the instance type in use to determine what the time-limit should be set
-                # to. Disabling for now as this is not ready for use.
-                # termination_value = #...
+        # time limit configured in the training-config. If the string replacement doesn't find anything to replace,
+        # the original string is returned unchanged rather than an error, so no try/except is necessary here.
+        termination_value = 0
+        if 'at-fixed-time' in training_config.get('termination-method', ''):
+            termination_value = training_config['time-limit']
 
-            userdata_script = userdata_script.replace('${TERMINATION_TIME_LIMIT}', termination_value)
-            logging.warning('Updated userdata with {} minute termination window.'.format(termination_value))
+        # elif 'around-cost' in training_config.get('termination-method', ''):
+            # TODO Do some maths here based on the instance type in use to determine what the time-limit should be set
+            # to. Disabling for now as this is not ready for use.
+            # termination_value = #...
 
-        except:
-            # If the string replacement fails, no worry - just means there's no termination command to modify.
-            pass
+        userdata_script = userdata_script.replace('${TERMINATION_TIME_LIMIT}', str(termination_value))
+        logging.warning('Updated userdata with {} minute termination window.'.format(termination_value))
 
         client_cfn = boto3.client('cloudformation')
 

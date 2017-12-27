@@ -11,7 +11,8 @@
 # First, set up a hard shutdown rule to prevent the training stack from running indefinitely.
 # This should be pulled from the training-config, slotted in during the CFN template loading
 # function.
-sudo poweroff ${TERMINATION_TIME_LIMIT} &
+printf "%s\n" "Received TERMINATION_TIME_LIMIT value of ${TERMINATION_TIME_LIMIT}, executing: sudo shutdown -h +${TERMINATION_TIME_LIMIT} &"
+sudo shutdown -h +${TERMINATION_TIME_LIMIT} &
 
 # Run setup of your training session. Your commands will invariably look different.
 cd /tmp
