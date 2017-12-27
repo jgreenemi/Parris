@@ -1,5 +1,7 @@
 # README #
 
+![Parris Icon](/resources/Parris-Logo-Transparentx400.png)
+
 Parris, the automated training tool for machine learning algorithms.
 
 ### Setup ###
