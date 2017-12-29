@@ -139,7 +139,12 @@ Once that's ready to go, then you can proceed to the next step.
 
 ## 1. Preparing Your Lambda Function ##
 
-Before we can launch a training job, we need a way to kick that off. This step will have you creating an AWS Lambda function that can be used for multiple training jobs of the same algorithm, or multiple training jobs of different algorithms.
+Before we can launch a training job, we need a way to kick that off - that's where your Lambda config will get used. This step will have you creating an AWS Lambda function that can be used for multiple training jobs of the same algorithm, or multiple training jobs of different algorithms.
+
+1. In the Parris package root, activate your virtualenv if you haven't already.
+1. Create your Lambda function with: `$ python setup.py`
+    1. If you already have a Lambda function this will update the code package for it.
+1. If all goes well, the log will print out an ARN value for confirmation.
 
 ## 2. Launching Your First Training Stack ##
 
