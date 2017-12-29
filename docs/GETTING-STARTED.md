@@ -129,7 +129,7 @@ Finally, we need to set up the `trainer-script.sh` so it'll actually run your tr
 Once that is done, you are nearly set to get started using the tool! If you are **NOT** using an `s3-training-bucket` value in your `lambda-config.json`, then you are ready to go - proceed to the next step. If you are using an S3 bucket for loading your configs, you'll need to load the following files in your S3 bucket such that its resulting structure looks like so (as in no subdirectories or differing filenames):
 
 ```bash
-+---MyS3Bucket
++---your-s3-bucket
 |   \---trainer-script.sh
 |   \---training-config.json
 |   \---lambda-config.json
@@ -148,15 +148,50 @@ Before we can launch a training job, we need a way to kick that off - that's whe
 
 ## 2. Launching Your First Training Stack ##
 
-## 3. Updating Your Training Stack ##
+1. Open the AWS console and navigate to your Lambda function.
+1. Click the "Test" button, at the top of the page, to invoke the function manually. If you don't have a test configured, you will need to do so.
+    1. In the Saved Test Events dropdown next to the Test button, click "Configure test events" to create a new one.
+    1. Since the Lambda function only has one activity (to launch a new CloudFormation stack when it's invoked), we don't need to pass it any parameters. (If you pass it some it'll accept them, but they won't get used.)
+    1. Create a test with Event Name `Parris-Test-Event` and a body of `{}`. Click Save.
+    1. Upon closing the creation dialogue, click Test with your new Test Event in the dropdown and watch for the Execution Result to update.
+1. When your function has run, the Execution Result should read "succeeded" and give an output of `{}`.
+    1. If the function had an error, expand the Exection Result heading to read the errors. Common issues here are around missing IAM permissions on the Lambda function's IAM role.
+1. Switch to the CloudFormation view of the AWS Console to watch as your new CloudFormation stack launches. This should only take a minute or two, but is highly dependent on what kind of instance you're launching.
+1. Switch to the EC2 Instance view of the AWS Console to take a look at the new instance you've launched. It should soon get to the "Running" state and will be running your training job.
 
-## 4. Getting Training Results ##
+**Note: In the current build of this tool, the CloudFormation stack will not terminate upon completion of the training job. Instead, the EC2 Instance will power itself off. You will be saved from accruing additional costs, since the instance will no longer be running, but to clean it up you'll need to navigate back to the CloudFormation view of the console and click the Delete Stack option under the Actions dropdown to actually delete it.** 
 
-This largely depends on how you have your algorithm set to save the resulting parameters. For our example, those will be stored locally in the `target/` directory. But, since we'll be terminating the stack at the end of this guide, we'll want to push those out to a more permanent location. 
+## 3. Getting Training Results ##
 
-## 5. Terminating Your CloudFormation Stack ##
+This largely depends on how you have your algorithm set to save the resulting parameters. In most cases these results will be saved to a local directory (i.e. somewhere on the server, likely in the same package that's doing the training). But, since we'll be terminating the stack at the end of this guide, we'll want to push those out to a more permanent location. 
 
-## 6. Updating Your Lambda Function ##
+## 4. Terminating Your CloudFormation Stack ##
+
+
+
+## 5. Updating Your Lambda Function ##
+
+Updating your Lambda function is as easy as making your changes in the `lambda-function.py` file, and re-running `$ python setup.py`. The script will first attempt to create the Lambda function, and if it fails with an error that the function already exists, it'll run an update of the function's code. 
+
+Note that certain details about the Lambda function configuration (i.e. the amount of memory it is given) won't be updated by this script - you'll need to either add additional logic into the script to update the function metadata, or just delete and re-recreate your Lambda function with the updated metadata. This is because there are multiple update methods for Lambda functions, and no one update method that covers all possible scenarios, so I put in the one that is most likely to be used right away. Future builds of the tool may include additional update behaviours to cover all scenarios.
+
+You can test the update behaviour by:
+
+1. Open `lambda-function.py` and scroll down to line 272, the `return return-values` statement.
+1. Insert a new line just above the return statement so your function ends with:
+    ```python
+    logging.warning('This is a synthetic warning message!')
+    
+    return return_values
+    ```
+    1. Any kind of message will work here, and it can occur most anywhere in that function - just so long as we make some change to the code we can demonstrate that the Lambda function updated.
+1. Once the change has been made, simply run `$ python setup.py` again and watch the logging output for the updated ARN being reported.
+1. Trigger your Lambda function again with the Test button, and expand out the Execution Result heading. The log output box should include the usual logging output from the Lambda function, and among those messages should be your test message from above.
+1. Make sure to terminate your CloudFormation stack to save on costs here. 
+ 
+## 6. Updating Your Training Stack ##
+
+**Updating CloudFormation stacks are in limited functionality in this build as updating a CloudFormation stack will not force a training job to restart. For this reason it's recommended not to update CloudFormation stacks, but rather delete and re-launch them when you have to re-run a training job.**
 
 ## 7. Triggering Training Jobs Outside the AWS Console ##
 
