@@ -32,6 +32,10 @@ pip 9.0.1 from ...\python\python36\lib\site-packages (python 3.6)
 (env) $ pip install -r requirements.txt 
 ```
 
+## How To Use ##
+
+To use Parris, follow the [Getting Started guide](/docs/GETTING-STARTED.md) which will take you from setup all the way to launching your first ML training stack.
+
 ## FAQ ##
 
 Consult the [FAQ page in the documentation](/docs/FAQ.md) as many questions are answered there. If your question was not answered, please get in touch, either via a new Github Issue (preferred) or via an email below. The former is preferred as others with the same question can benefit from seeing the answer posted publicly.
