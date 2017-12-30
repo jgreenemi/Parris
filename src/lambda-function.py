@@ -128,7 +128,7 @@ def stack_creator(testmode=False):
         # In the userdata script there may be a termination command. If there is one, do a string replacement with the
         # time limit configured in the training-config. If the string replacement doesn't find anything to replace,
         # the original string is returned unchanged rather than an error, so no try/except is necessary here.
-        termination_value = 0
+        termination_value = 'never'
         if 'at-fixed-time' in training_config.get('termination-method', ''):
             termination_value = training_config['time-limit']
 
