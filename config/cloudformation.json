@@ -31,7 +31,12 @@
       "Type" : "String",
       "Default" : "p3.2xlarge",
       "ConstraintDescription" : "Invalid EC2 instance type - note that some instance types are not enabled by default in the CFN template."
-    }
+    },
+	"InstanceIAMRoleName" : {
+	  "Description": "An IAM role for the EC2 Instance to use, to give the instance permissions to other AWS resources.",
+	  "Type": "String",
+	  "Default" : ""
+	}
   },
 
   "Mappings" : {
@@ -102,6 +107,7 @@
           "Value": { "Ref": "TrainingJobName" }
           }
         ],
+        "IamInstanceProfile": {"Ref" : "InstanceIAMRoleName" },
         "KeyName": {"Ref" : "KeyPairName"},
         "SubnetId": {"Ref" : "SubnetId"},
         "InstanceType" : { "Ref" : "InstanceType" },

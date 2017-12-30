@@ -168,6 +168,10 @@ def stack_creator(testmode=False):
                             'ParameterValue': training_config.get('instance-type', '')
                         },
                         {
+                            'ParameterKey': 'InstanceIAMRoleName',
+                            'ParameterValue': training_config.get('instance-iam-role-name', '')
+                        },
+                        {
                             'ParameterKey': 'SecurityGroupId',
                             'ParameterValue': training_config.get('security-group-id', '')
                         },
