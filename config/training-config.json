@@ -7,6 +7,7 @@
   "time-limit": 10,
   "cost-limit": 300,
   "instance-type": "t2.micro",
+  "instance-iam-role-name": "s3Full",
   "security-group-id": "sg-2ff91848",
   "subnet-id": "subnet-634f5c06",
   "ec2-keypair-name": "Oregon-Key-Pair",

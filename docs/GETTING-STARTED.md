@@ -15,7 +15,7 @@ The primary purpose of this tool is to reduce the amount of repetitive setup it 
 
 ## What You Need Before Starting ##
 
-Follow the setup notes in the README. You will need a machine learning algorithm with its dataset, ready to be trained, and a Bash script that will kick off that training job.
+Follow the setup notes [in the README](/README.md). You will need a machine learning algorithm with its dataset, ready to be trained, and a Bash script that will kick off that training job.
 
 If that sounds like a lot, don't worry - this package comes with an example trainer-script to give you an idea of what all is involved if you haven't yet made one. Now, if that sounds like a lot because your algorithm is not yet in a state to be trained or does not have a dataset prepared, then you will not be able to take advantage of this tool, so do make sure you have all that ready to go before starting.
 
