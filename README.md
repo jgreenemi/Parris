@@ -34,7 +34,7 @@ pip 9.0.1 from ...\python\python36\lib\site-packages (python 3.6)
 
 ## How To Use ##
 
-To use Parris, follow the [Getting Started guide](/docs/GETTING-STARTED.md) which will take you from setup all the way to launching your first ML training stack.
+To use Parris, follow the [Getting Started guide](/docs/GETTING-STARTED.md) which will take you from setup all the way to launching your first ML training stack. While getting familiar with the tool you'll also want to [consult the Configuration guide](/docs/CONFIGURATION.md) to better understand what options are available to you. This will help a lot in conjunction with the Getting Started guide.
 
 ## FAQ ##
 
