@@ -4,7 +4,8 @@ For everything that doesn't fit elsewhere in the documentation.
 
 ## Table of Contents ##
 
-1. [Will this cost money to run?](#will-this-cost-money-to-run) 
+1. [Will this cost money to run?](#will-this-cost-money-to-run)
+1. [Who is this tool intended for? Can it be used in a corporate setting?](#who-is-this-tool-intended-for-can-it-be-used-in-a-corporate-setting) 
 1. [This tool is in Python. Does my algorithm need to be written in Python to use it?](#this-tool-is-in-python-does-my-algorithm-need-to-be-written-in-python-to-use-it)
 1. [Can I use an OS other than Amazon Linux?](#can-i-use-an-os-other-than-amazon-linux)
 1. [Can I use this tool with Python2.x instead of Python3.x?]()
