@@ -133,8 +133,8 @@ def stack_creator(testmode=False):
             termination_value = training_config['time-limit']
 
         # elif 'around-cost' in training_config.get('termination-method', ''):
-            # TODO Do some maths here based on the instance type in use to determine what the time-limit should be set
-            # to. Disabling for now as this is not ready for use.
+            # Pending https://github.com/jgreenemi/Parris/issues/1
+            # Disabling for now as this is not ready for use.
             # termination_value = #...
 
         userdata_script = userdata_script.replace('${TERMINATION_TIME_LIMIT}', str(termination_value))
