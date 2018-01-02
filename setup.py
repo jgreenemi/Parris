@@ -118,7 +118,7 @@ def lambda_creation(lambda_config={}, lambdapack='', dryrun=False):
 
         logging.warning('Successfully created function: \n{}'.format(lambda_arn))
         return [True, lambda_arn]
-    
+
     except Exception as e:
         msg = 'lambda_creation failure: {}'.format(e)
         logging.error(msg)
@@ -133,7 +133,7 @@ def parse_config():
     try:
         config = json.load(open('config/lambda-config.json'))
         return config
-    
+
     except Exception as e:
         msg = 'parse_config failure: {}'.format(e)
         logging.error(msg)
@@ -165,7 +165,7 @@ def _test_lambda_creation():
         lambdapack_successfail, lambdapack_filepath = lambda_packer()
         lambda_creation(lambda_config, lambdapack=lambdapack_filepath, dryrun=True)
         return [True, '']
-    
+
     except Exception as e:
         msg = '_test_lambda_creation failure: {}'.format(e)
         logging.error(msg)
@@ -182,7 +182,7 @@ def _test_parse_config():
         lambda_config = parse_config()
         logging.debug('Config parsed, training-job-name set to: {}'.format(lambda_config['lambda-role-arn']))
         return [True, '']
-    
+
     except Exception as e:
         msg = '_test_parse_config failure: {}'.format(e)
         logging.error(msg)
@@ -199,7 +199,7 @@ if __name__ == '__main__':
     testresult.append(_test_lambda_packer())
 
     # There is no dryrun option for creating the function so this isn't terribly helpful for us.
-    #testresult.append(_test_lambda_creation())
+    # testresult.append(_test_lambda_creation())
 
     for testresult, testmsg in testresult:
         if not testresult:
