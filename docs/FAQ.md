@@ -7,6 +7,13 @@ For everything that doesn't fit elsewhere in the documentation.
 1. [Will this cost money to run?](#will-this-cost-money-to-run) 
 1. [This tool is in Python. Does my algorithm need to be written in Python to use it?](#this-tool-is-in-python-does-my-algorithm-need-to-be-written-in-python-to-use-it)
 1. [Can I use an OS other than Amazon Linux?](#can-i-use-an-os-other-than-amazon-linux)
+1. [Can I use this tool with Python2.x instead of Python3.x?]()
+1. [There are a lot of instance types not listed in the CloudFormation template. Am I restricted to only using c4/c5/p2/p3/g3/etc. instances?](#there-are-a-lot-of-instance-types-not-listed-in-the-cloudformation-template-am-i-restricted-to-only-using-c4c5p2p3g3etc-instances)
+1. [Do I need to delete each CloudFormation stack by hand when training has finished?](#do-i-need-to-delete-each-cloudformation-stack-by-hand-when-training-has-finished)
+1. [I don't need a Lambda function for my use case, but still want to use this tool. Can I?](#i-dont-need-a-lambda-function-for-my-use-case-but-still-want-to-use-this-tool-can-i)
+1. [Why are you using AWS? Why not GCP, Azure, etc.?](#why-are-you-using-aws-why-not-gcp-azure-etc)
+1. [Where did the name come from?](#where-did-the-name-come-from)
+1. [Is this a library?](#is-this-a-library)
 
 ## Will this cost money to run? ##
 
@@ -48,4 +55,4 @@ I am most familiar with AWS and use it for my projects. I expect much or even al
 
 ## Is this a library? ##
 
-No, this is a tool, a set of scripts, and as such is not intended to be imported into another package. There's no reason you can't, but the scripts will likely need some changes made to them to make that possible.
+No, this is a tool, a set of scripts, and as such is not intended to be imported into another package. There's no reason you can't, but the scripts will likely need some changes made to them to make them useful in that way (i.e. creating classes to house the script functions).
