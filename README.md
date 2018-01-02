@@ -2,7 +2,7 @@
 
 ![Parris Icon](/resources/Parris-Logo-Transparentx250.png)
 
-Parris, the automated training tool for machine learning algorithms.
+Parris, the automated infrastructure setup tool for machine learning algorithms.
 
 ## What Is This Tool? ##
 
