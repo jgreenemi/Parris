@@ -2,6 +2,12 @@
 
 For everything that doesn't fit elsewhere in the documentation.
 
+## Table of Contents ##
+
+1. [Will this cost money to run?](#will-this-cost-money-to-run) 
+1. [This tool is in Python. Does my algorithm need to be written in Python to use it?](#this-tool-is-in-python-does-my-algorithm-need-to-be-written-in-python-to-use-it)
+1. [Can I use an OS other than Amazon Linux?](#can-i-use-an-os-other-than-amazon-linux)
+
 ## Will this cost money to run? ##
 
 Yes it will. If you are on an AWS Free Tier account, note that this could still cost you money to run, depending on the EC2 instance type used, and possibly other resources necessary for this tool. For example, I'm unfamiliar with the Free Tier usage limits of CloudFormation and Lambda, for example, but I expect those are not completely free to use. 
