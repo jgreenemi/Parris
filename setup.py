@@ -65,8 +65,6 @@ def lambda_creation(lambda_config={}, lambdapack='', dryrun=False):
     """
     try:
         # Make a Lambda Boto3 client, upload lambdapack, return successful ARN to prove success.
-        # TODO customize the method by which the AWS keys are decided. User may want to create this under a different
-        # AWS account than their environment variables are set.
         client_lambda = boto3.client('lambda')
 
         # TODO Make the IAM role configurable by user for what they may need from it. Since this'll be job-agnostic,
