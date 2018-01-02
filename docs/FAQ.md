@@ -19,6 +19,12 @@ For everything that doesn't fit elsewhere in the documentation.
 
 Yes it will. If you are on an AWS Free Tier account, note that this could still cost you money to run, depending on the EC2 instance type used, and possibly other resources necessary for this tool. For example, I'm unfamiliar with the Free Tier usage limits of CloudFormation and Lambda, for example, but I expect those are not completely free to use. 
 
+## Who is this tool intended for? Can it be used in a corporate setting? ##
+
+This tool is developed with the individual practitioner in mind - those who are working individual projects, are hobbyists, etc. While there's no reason Parris can't be used in a corporate setting, the tool does not (and is not planned to) have many features that enterprise users are used to, regular support being one of them.
+
+For those in corporate settings looking to have a stronger machine learning pipeline, I would recommend more fully-fledged services such as [FloydHub](https://www.floydhub.com), [Neptune.ML](https://neptune.ml), and others, as they will likely be able to serve your needs better.
+
 ## This tool is in Python. Does my algorithm need to be written in Python to use it? ##
 
 Nope! The tool may be written in Python, and the example trainer-script is written in Bash, but your algorithm need not be written in either. As long as your algorithm can be launched from a Linux
