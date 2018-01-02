@@ -67,8 +67,6 @@ def lambda_creation(lambda_config={}, lambdapack='', dryrun=False):
         # Make a Lambda Boto3 client, upload lambdapack, return successful ARN to prove success.
         client_lambda = boto3.client('lambda')
 
-        # TODO Make the IAM role configurable by user for what they may need from it. Since this'll be job-agnostic,
-        # assume it needs read/write to S3, CFN launch, EC2 tag describe, and nothing else.
         # TODO Allow training-job config to specify if this function should be noclobber if exists. Doesn't really
         # need to be in the training-job config if the Lambda function will be job-agnostic though.
 
