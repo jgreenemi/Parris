@@ -65,14 +65,7 @@ def lambda_creation(lambda_config={}, lambdapack='', dryrun=False):
     """
     try:
         # Make a Lambda Boto3 client, upload lambdapack, return successful ARN to prove success.
-        # TODO customize the method by which the AWS keys are decided. User may want to create this under a different
-        # AWS account than their environment variables are set.
         client_lambda = boto3.client('lambda')
-
-        # TODO Make the IAM role configurable by user for what they may need from it. Since this'll be job-agnostic,
-        # assume it needs read/write to S3, CFN launch, EC2 tag describe, and nothing else.
-        # TODO Allow training-job config to specify if this function should be noclobber if exists. Doesn't really
-        # need to be in the training-job config if the Lambda function will be job-agnostic though.
 
         try:
             logging.warning('Uploading Lambdapack from {}'.format(lambdapack))
@@ -201,7 +194,6 @@ if __name__ == '__main__':
     Parse the config, craft a CloudFormation template, create the Lambda function.
     """
 
-    # TODO Go through this file and change the logger so not everything's a logging.warning() message.
     testresult = []
     testresult.append(_test_parse_config())
     testresult.append(_test_lambda_packer())
@@ -219,7 +211,6 @@ if __name__ == '__main__':
     # Lambdapack is your Lambda-ready ZIP file. You don't have to use the lambda_packer function if you already have one
     # made up, but this is likely the option you want.
     try:
-        # TODO Move these to their own function, likely lambda_creation, name them for internal functions per PEP8.
         lambda_config = parse_config()
         lambdapack_successfail, lambdapack_filepath = lambda_packer()
         lambda_creation(lambda_config=lambda_config, lambdapack=lambdapack_filepath)

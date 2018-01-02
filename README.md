@@ -40,6 +40,10 @@ To use Parris, follow the [Getting Started guide](/docs/GETTING-STARTED.md) whic
 
 Consult the [FAQ page in the documentation](/docs/FAQ.md) as many questions are answered there. If your question was not answered, please get in touch, either via a new Github Issue (preferred) or via an email below. The former is preferred as others with the same question can benefit from seeing the answer posted publicly.
 
+## Contributions ##
+
+This tool is an open source project [released under the Apache 2.0 license](/LICENSE.md). Contributions from the community are more than welcome! Do consult the [Issues page](https://github.com/jgreenemi/Parris/issues) for known feature requests, roadmap items, and bugs you can work on.
+
 ## Contact ##
 
 * Joseph Greene, [jgreenemi@gmail.com](mailto:jgreenemi@gmail.com)
