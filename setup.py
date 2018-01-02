@@ -194,7 +194,6 @@ if __name__ == '__main__':
     Parse the config, craft a CloudFormation template, create the Lambda function.
     """
 
-    # TODO Go through this file and change the logger so not everything's a logging.warning() message.
     testresult = []
     testresult.append(_test_parse_config())
     testresult.append(_test_lambda_packer())
