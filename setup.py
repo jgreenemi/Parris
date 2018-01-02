@@ -67,9 +67,6 @@ def lambda_creation(lambda_config={}, lambdapack='', dryrun=False):
         # Make a Lambda Boto3 client, upload lambdapack, return successful ARN to prove success.
         client_lambda = boto3.client('lambda')
 
-        # TODO Allow training-job config to specify if this function should be noclobber if exists. Doesn't really
-        # need to be in the training-job config if the Lambda function will be job-agnostic though.
-
         try:
             logging.warning('Uploading Lambdapack from {}'.format(lambdapack))
             creation_response = client_lambda.create_function(
