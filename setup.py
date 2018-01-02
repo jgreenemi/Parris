@@ -211,7 +211,6 @@ if __name__ == '__main__':
     # Lambdapack is your Lambda-ready ZIP file. You don't have to use the lambda_packer function if you already have one
     # made up, but this is likely the option you want.
     try:
-        # TODO Move these to their own function, likely lambda_creation, name them for internal functions per PEP8.
         lambda_config = parse_config()
         lambdapack_successfail, lambdapack_filepath = lambda_packer()
         lambda_creation(lambda_config=lambda_config, lambdapack=lambdapack_filepath)
