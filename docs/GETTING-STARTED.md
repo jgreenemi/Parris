@@ -11,7 +11,7 @@ Parris is a tool that:
 * runs a UserData script on the stack's EC2 instance when it is first launched, that kicks off your training job
 * stops the EC2 instance when it has finished.
 
-The primary purpose of this tool is to reduce the amount of repetitive setup it takes for you to train your machine learning algorithms, and in doing so save some cost by utilizing your server's compute hours more effectively (server starts the training jobh as soon as it's launched, and stops when you've configured it to stop).
+The primary purpose of this tool is to reduce the amount of repetitive setup it takes for you to train your machine learning algorithms, and in doing so save some cost by utilizing your server's compute hours more effectively (server starts the training job as soon as it's launched, and stops when you've configured it to stop).
 
 ## What You Need Before Starting ##
 
